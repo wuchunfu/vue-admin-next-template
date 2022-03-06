@@ -5,20 +5,19 @@
       :title="$t('message.tagsView.closeFullscreen')"
       @click="onCloseFullscreen"
     >
-      <SvgIcon name="elementClose"/>
+      <SvgIcon name="ele-Close"/>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { computed, reactive, toRefs } from 'vue';
+import { computed, defineComponent } from 'vue';
 import { useStore } from '/@/store';
 
-export default {
+export default defineComponent({
   name: 'layoutCloseFull',
   setup() {
     const store = useStore();
-    const state: any = reactive({});
     // 获取卡片全屏信息
     const isTagsViewCurrenFull = computed(() => {
       return store.state.tagsViewRoutes.isTagsViewCurrenFull;
@@ -30,10 +29,9 @@ export default {
     return {
       isTagsViewCurrenFull,
       onCloseFullscreen,
-      ...toRefs(state),
     };
   },
-};
+});
 </script>
 
 <style scoped lang="scss">
@@ -65,7 +63,7 @@ export default {
       transition: all 0.3s ease;
 
       i {
-        color: var(--color-primary);
+        color: var(--el-color-primary);
         transition: all 0.3s ease;
       }
     }

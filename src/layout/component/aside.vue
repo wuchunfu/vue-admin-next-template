@@ -15,24 +15,20 @@
 </template>
 
 <script lang="ts">
-import { computed, getCurrentInstance, onBeforeMount, reactive, toRefs, watch } from 'vue';
+import { computed, defineComponent, getCurrentInstance, onBeforeMount, reactive, toRefs, watch } from 'vue';
 import { useStore } from '/@/store';
 import Logo from '/@/layout/logo/index.vue';
 import Vertical from '/@/layout/navMenu/vertical.vue';
 
-export default {
+export default defineComponent({
   name: 'layoutAside',
   components: { Logo, Vertical },
   setup() {
-    const { proxy } = getCurrentInstance() as any;
+    const { proxy } = <any>getCurrentInstance();
     const store = useStore();
-    const state: any = reactive({
+    const state = reactive({
       menuList: [],
-      clientWidth: '',
-    });
-    // 获取布局配置信息
-    const getThemeConfig = computed(() => {
-      return store.state.themeConfig.themeConfig;
+      clientWidth: 0,
     });
     // 获取卡片全屏信息
     const isTagsViewCurrenFull = computed(() => {
@@ -41,8 +37,8 @@ export default {
     // 设置菜单展开/收起时的宽度
     const setCollapseStyle = computed(() => {
       const { layout, isCollapse, menuBar } = store.state.themeConfig.themeConfig;
-      const asideBrColor =
-        menuBar === '#FFFFFF' || menuBar === '#FFF' || menuBar === '#fff' || menuBar === '#ffffff' ? 'layout-el-aside-br-color' : '';
+      const asideBrTheme = ['#FFFFFF', '#FFF', '#fff', '#ffffff'];
+      const asideBrColor = asideBrTheme.includes(menuBar) ? 'layout-el-aside-br-color' : '';
       // 判断是否是手机端
       if (state.clientWidth <= 1000) {
         if (isCollapse) {
@@ -79,7 +75,10 @@ export default {
     // 关闭移动端蒙版
     const closeLayoutAsideMobileMode = () => {
       const el = document.querySelector('.layout-aside-mobile-mode');
-      el && el.parentNode?.removeChild(el);
+      el?.setAttribute('style', 'animation: error-img-two 0.3s');
+      setTimeout(() => {
+        el?.parentNode?.removeChild(el);
+      }, 300);
       store.state.themeConfig.themeConfig.isCollapse = false;
       document.body.setAttribute('class', '');
     };
@@ -93,7 +92,7 @@ export default {
       if (store.state.themeConfig.themeConfig.layout === 'columns') {
         return false;
       }
-      state.menuList = filterRoutesFun(store.state.routesList.routesList);
+      (state.menuList as any) = filterRoutesFun(store.state.routesList.routesList);
     };
     // 路由过滤递归函数
     const filterRoutesFun = (arr: Array<object>) => {
@@ -122,7 +121,7 @@ export default {
       store.dispatch('routesList/setColumnsMenuHover', bool);
     };
     // 监听 themeConfig 配置文件的变化，更新菜单 el-scrollbar 的高度
-    watch(store.state.themeConfig.themeConfig, (val) => {
+    watch(store.state.themeConfig.themeConfig, (val: any) => {
       if (val.isShowLogoChange !== val.isShowLogo) {
         if (!proxy.$refs.layoutAsideScrollbarRef) {
           return false;
@@ -131,7 +130,7 @@ export default {
       }
     });
     // 监听vuex值的变化，动态赋值给菜单中
-    watch(store.state, (val) => {
+    watch(store.state, (val: any) => {
       let { layout, isClassicSplitMenu } = val.themeConfig.themeConfig;
       if (layout === 'classic' && isClassicSplitMenu) {
         return false;
@@ -165,11 +164,10 @@ export default {
     return {
       setCollapseStyle,
       setShowLogo,
-      getThemeConfig,
       isTagsViewCurrenFull,
       onAsideEnterLeave,
       ...toRefs(state),
     };
   },
-};
+});
 </script>

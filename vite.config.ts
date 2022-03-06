@@ -1,14 +1,11 @@
 import vue from '@vitejs/plugin-vue';
 import { resolve } from 'path';
-import type { ConfigEnv, UserConfigExport } from 'vite';
-import { loadEnv } from '/@/utils/viteBuild';
+import { ConfigEnv, defineConfig, loadEnv, UserConfig } from 'vite';
 import { viteMockServe } from 'vite-plugin-mock'
 
 const pathResolve = (dir: string): any => {
   return resolve(__dirname, '.', dir);
 };
-
-const { VITE_PORT, VITE_OPEN, VITE_API_URL, VITE_PUBLIC_PATH, VITE_DROP_CONSOLE, VITE_USE_MOCK } = loadEnv();
 
 const alias: Record<string, string> = {
   '/@': pathResolve('./src/'),
@@ -16,7 +13,8 @@ const alias: Record<string, string> = {
 };
 
 // https://vitejs.dev/config/
-export default ({ command }: ConfigEnv): UserConfigExport => {
+const viteConfig = defineConfig(({ command, mode }: ConfigEnv): UserConfig => {
+  const env = loadEnv(mode, process.cwd());
   return {
     // 项目根目录
     root: process.cwd(),
@@ -24,13 +22,13 @@ export default ({ command }: ConfigEnv): UserConfigExport => {
     // 静态资源服务的文件夹
     publicDir: "public",
     // 项目部署的基础路径
-    base: process.env.NODE_ENV === 'production' ? VITE_PUBLIC_PATH : './',
+    base: command === 'serve' ? './' : env.VITE_PUBLIC_PATH,
     server: {
       // 服务器主机名
       host: '0.0.0.0',
       // 端口号
-      port: VITE_PORT,
-      open: VITE_OPEN,
+      port: env.VITE_PORT as unknown as number,
+      open: env.VITE_OPEN,
       // 设为 true 时若端口已被占用则会直接退出，
       // 而不是尝试下一个可用端口
       strictPort: true,
@@ -38,7 +36,7 @@ export default ({ command }: ConfigEnv): UserConfigExport => {
       watch: {},
       proxy: {
         '/api': {
-          target: VITE_API_URL,
+          target: env.VITE_API_URL,
           ws: true,
           changeOrigin: true,
           rewrite: (path: string) => path.replace(/^\/api/, ''),
@@ -68,12 +66,17 @@ export default ({ command }: ConfigEnv): UserConfigExport => {
       terserOptions: {
         compress: {
           keep_infinity: true,
-          // Used to delete console in production environment
-          drop_console: VITE_DROP_CONSOLE,
+          drop_console: true,
+          drop_debugger: true,
+        },
+        ie8: true,
+        output: {
+          comments: true,
         },
       },
       rollupOptions: {
         output: {
+          compact: true,
           // 拆分代码
           manualChunks: {
             'vue': ['vue', 'vue-router', 'vuex', 'vue-i18n'],
@@ -128,7 +131,6 @@ export default ({ command }: ConfigEnv): UserConfigExport => {
       viteMockServe({
         mockPath: 'mock',
         localEnabled: command !== 'build',
-        prodEnabled: command === 'build' && VITE_USE_MOCK,
         watchFiles: true,
         injectCode: `
                 import { setupProdMockServer } from '../mock/_createProductionServer';
@@ -139,4 +141,6 @@ export default ({ command }: ConfigEnv): UserConfigExport => {
       }),
     ],
   }
-};
+});
+
+export default viteConfig;

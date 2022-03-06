@@ -1,7 +1,7 @@
 // 定义内容
 export default {
   label: {
-    one1: 'Account password',
+    one1: 'Username login',
     two2: 'Mobile number',
   },
   link: {
@@ -13,7 +13,7 @@ export default {
     two6: 'Copyright: Beijing XXX software technology Guangdong ICP preparation no.05010000',
   },
   account: {
-    accountPlaceholder1: 'The user name admin or not is test',
+    accountPlaceholder1: 'The user name admin or not is common',
     accountPlaceholder2: 'Password: 123456',
     accountPlaceholder3: 'Please enter the verification code',
     accountBtnText: 'Sign in',
@@ -23,6 +23,10 @@ export default {
     placeholder2: 'Please enter the verification code',
     codeText: 'Get code',
     btnText: 'Sign in',
+    msgText: 'Warm tip: it is recommended to use Google, Microsoft edge, version 79.0.1072.62 and above browsers, and 360 browser, please use speed mode',
+  },
+  scan: {
+    text: 'Open the mobile phone to scan and quickly log in / register',
   },
   signInText: 'welcome back!',
 };

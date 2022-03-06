@@ -15,21 +15,25 @@
         </template>
         <SubItem :chil="val.children"/>
       </el-sub-menu>
-      <el-menu-item :index="val.path" :key="val.path" v-else>
-        <SvgIcon :name="val.meta.icon"/>
-        <template #title v-if="!val.meta.isLink || (val.meta.isLink && val.meta.isIframe)">
-          <span>{{ $t(val.meta.title) }}</span>
-        </template>
-        <template #title v-else>
-          <a :href="val.meta.isLink" target="_blank" rel="opener">{{ $t(val.meta.title) }}</a>
-        </template>
-      </el-menu-item>
+      <template v-else>
+        <el-menu-item :index="val.path" :key="val.path">
+          <SvgIcon :name="val.meta.icon"/>
+          <template #title v-if="!val.meta.isLink || (val.meta.isLink && val.meta.isIframe)">
+            <span>{{ $t(val.meta.title) }}</span>
+          </template>
+          <template #title v-else>
+            <a :href="val.meta.isLink" target="_blank" rel="opener" class="w100">
+              {{ $t(val.meta.title) }}
+            </a>
+          </template>
+        </el-menu-item>
+      </template>
     </template>
   </el-menu>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, getCurrentInstance, onMounted, reactive, toRefs, watch } from 'vue';
+import { computed, defineComponent, onMounted, reactive, toRefs, watch } from 'vue';
 import { onBeforeRouteUpdate, useRoute } from 'vue-router';
 import { useStore } from '/@/store';
 import SubItem from '/@/layout/navMenu/subItem.vue';
@@ -44,7 +48,6 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const { proxy } = getCurrentInstance() as any;
     const store = useStore();
     const route = useRoute();
     const state = reactive({
@@ -54,7 +57,7 @@ export default defineComponent({
     });
     // 获取父级菜单数据
     const menuLists = computed(() => {
-      return props.menuList;
+      return <any>props.menuList;
     });
     // 获取布局配置信息
     const getThemeConfig = computed(() => {
@@ -82,7 +85,6 @@ export default defineComponent({
     // 路由更新时
     onBeforeRouteUpdate((to: any) => {
       state.defaultActive = setParentHighlight(to);
-      proxy.mittBus.emit('onMenuClick');
       const clientWidth = document.body.clientWidth;
       if (clientWidth < 1000) getThemeConfig.value.isCollapse = false;
     });

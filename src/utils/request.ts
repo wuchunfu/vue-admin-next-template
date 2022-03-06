@@ -20,7 +20,7 @@ service.interceptors.request.use((config: any) => {
     // 在发送请求之前做些什么 token
     if (Session.get('token') && !isToken) {
       // 让每个请求携带自定义token 请根据实际情况自行修改
-      config.headers.common['Authorization'] = `Bearer ${ Session.get('token') }`;
+      (<any>config.headers).common['Authorization'] = `${Session.get('token')}`;
     }
     // get请求映射params参数
     if (config.method === 'get' && config.params) {

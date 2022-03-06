@@ -5,11 +5,11 @@
 </template>
 
 <script lang="ts">
-import { computed } from 'vue';
+import { computed, defineComponent } from 'vue';
 import { useStore } from '/@/store';
 import NavBarsIndex from '/@/layout/navBars/index.vue';
 
-export default {
+export default defineComponent({
   name: 'layoutHeader',
   components: { NavBarsIndex },
   setup() {
@@ -32,5 +32,5 @@ export default {
       isTagsViewCurrenFull,
     };
   },
-};
+});
 </script>

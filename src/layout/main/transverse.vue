@@ -7,11 +7,13 @@
 </template>
 
 <script lang="ts">
+import { defineComponent } from 'vue';
+
 import Header from '/@/layout/component/header.vue';
 import Main from '/@/layout/component/main.vue';
 
-export default {
+export default defineComponent({
   name: 'layoutTransverse',
   components: { Header, Main },
-};
+});
 </script>

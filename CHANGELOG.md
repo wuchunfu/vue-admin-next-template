@@ -2,6 +2,53 @@
 
 🎉🎉🔥 `vue-next-admin` 基于 vue3.x 、Typescript、vite、Element plus 等，适配手机、平板、pc 的后台开源免费模板库（vue2.x 请切换 vue-prev-admin 分支）
 
+## 2.0.2
+
+`2022.03.04`
+
+- 🌟 更新 依赖更新最新版本
+- 🎯 优化 Alert 提示添加边框
+- 🎯 优化 功能 / 数字滚动 演示界面
+- 🐞 修复 全局主题按钮颜色 :active 问题
+- 🐞 修复 Dropdown 下拉菜单样式问题
+- 🐞 修复 SvgIcon 图标组件动态切换时报警告问题，[SvgIcon 改变 name 时可能导致图像不显示](https://gitee.com/lyt-top/vue-next-admin/issues/I4VGE0)，感谢@axcc1234
+
+## 2.0.1
+
+`2022.02.25`
+
+- 🌟 更新 依赖更新最新版本
+- 🎯 优化 svgIcon 图标组件
+- 🎯 优化 vite.config.ts 打包，感谢群友@YourObjec
+- 🐞 修复 tagViews 开启图标不显示问题（风格 5），感谢群友@坏人
+- 🐞 修复 [Element Plus 1.2.0-beta.6 以后的版本 el-table 在移动端无法左右滑动](https://gitee.com/lyt-top/vue-next-admin/issues/I4UPTP)，感谢@YGDada
+
+## 2.0.0
+
+`2022.02.21`
+
+⚡⚡⚡ 此版本为破环性更新，优化内容如下：（谨慎更新！谨慎更新！！谨慎更新！！！）。演示界面建议直接覆盖文件。如需使用之前版本，请前往[gitee 发行版](https://gitee.com/lyt-top/vue-next-admin/releases) 进行对应版本下载。基础版会基于 `master` 分支进行修改
+
+- 🌟 更新 依赖更新最新版本
+- 🌟 更新 登录页、首页
+- 💔 移除 vue-web-screen-shot
+- 💔 移除 城市多级联动，完整 json 数据请去 [vue-next-admin-images/menu](https://gitee.com/lyt-top/vue-next-admin-images/tree/master/menu) 仓库查看
+- 💔 移除 功能/echartsTree 树图
+- 💔 移除 其它设置/Tagsview 风格 2、Tagsview 风格 3
+- 💔 移除 功能/验证器
+- 🚧 调整 src/api 编写方式
+- 🚧 调整 自定义封装公用组件演示，更好的维护
+- 🎉 新增 Volar 支持，vs code 配置参考 [Vue Language Features (Volar)](https://lyt-top.gitee.io/vue-next-admin-doc-preview/home/vscode/)
+- 🎉 新增 `SvgIcon` 支持本地 svg 图标使用
+- 🎉 新增 表单表格验证演示
+- 🎯 优化 全局主题（移除 success、info、warning、danger）
+- 🎯 优化 工作流（开源）
+- 🎯 优化 element plus svg 图标，`elementXXX` 改成 `ele-XXX`
+- 🌈 重构 深色模式
+- 🌹 合并 [处理 parent 的 h100 由于外层有 min-height 导致失效的问题](https://gitee.com/lyt-top/vue-next-admin/pulls/20)，感谢@MaxNull、@21030442-mao
+- 🐞 修复 element plus 升级 `^1.3.0-beta.5` 后 组件 size 大小问题（大改：涉及布局、演示界面）
+- 🐞 修复 vs code 使用 Vue Language Features (Volar) 插件 代码报红问题（可以把公用的 ts 类型定义封装起来公用）
+
 ## 1.2.2
 
 `2021.12.21`

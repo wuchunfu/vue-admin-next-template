@@ -19,10 +19,11 @@
 </template>
 
 <script lang="ts">
+import { defineComponent } from 'vue';
 import { useRouter } from 'vue-router';
 import { Session } from '/@/utils/storage';
 
-export default {
+export default defineComponent({
   name: '401',
   setup() {
     const router = useRouter();
@@ -34,7 +35,7 @@ export default {
       onSetAuth,
     };
   },
-};
+});
 </script>
 
 <style scoped lang="scss">

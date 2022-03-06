@@ -2,16 +2,16 @@
   <div class="system-user-container">
     <el-card shadow="hover">
       <div class="system-user-search mb15">
-        <el-input size="small" placeholder="请输入用户名称" style="max-width: 180px"></el-input>
-        <el-button size="small" type="primary" class="ml10">
+        <el-input size="default" placeholder="请输入用户名称" style="max-width: 180px"></el-input>
+        <el-button size="default" type="primary" class="ml10">
           <el-icon>
-            <elementSearch/>
+            <ele-Search/>
           </el-icon>
           查询
         </el-button>
-        <el-button size="small" type="success" class="ml10" @click="onOpenAddUser">
+        <el-button size="default" type="success" class="ml10" @click="onOpenAddUser">
           <el-icon>
-            <elementFolderAdd/>
+            <ele-FolderAdd/>
           </el-icon>
           新增用户
         </el-button>
@@ -73,18 +73,46 @@
 </template>
 
 <script lang="ts">
-import { onMounted, reactive, ref, toRefs } from 'vue';
+import { defineComponent, onMounted, reactive, ref, toRefs } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import AddUer from '/@/views/system/user/component/addUser.vue';
 import EditUser from '/@/views/system/user/component/editUser.vue';
 
-export default {
+// 定义接口来定义对象的类型
+interface TableDataRow {
+  userName: string;
+  userNickname: string;
+  roleSign: string;
+  department: string[];
+  phone: string;
+  email: string;
+  sex: string;
+  password: string;
+  overdueTime: Date;
+  status: boolean;
+  describe: string;
+  createTime: string;
+}
+
+interface TableDataState {
+  tableData: {
+    data: Array<TableDataRow>;
+    total: number;
+    loading: boolean;
+    param: {
+      pageNum: number;
+      pageSize: number;
+    };
+  };
+}
+
+export default defineComponent({
   name: 'systemUser',
   components: { AddUer, EditUser },
   setup() {
     const addUserRef = ref();
     const editUserRef = ref();
-    const state: any = reactive({
+    const state = reactive<TableDataState>({
       tableData: {
         data: [],
         total: 0,
@@ -97,7 +125,7 @@ export default {
     });
     // 初始化表格数据
     const initTableData = () => {
-      const data: Array<object> = [];
+      const data: Array<TableDataRow> = [];
       for (let i = 0; i < 2; i++) {
         data.push({
           userName: i === 0 ? 'admin' : 'test',
@@ -122,11 +150,11 @@ export default {
       addUserRef.value.openDialog();
     };
     // 打开修改用户弹窗
-    const onOpenEditUser = (row: any) => {
+    const onOpenEditUser = (row: TableDataRow) => {
       editUserRef.value.openDialog(row);
     };
     // 删除用户
-    const onRowDel = (row: any) => {
+    const onRowDel = (row: TableDataRow) => {
       ElMessageBox.confirm(`此操作将永久删除账户名称：“${ row.userName }”，是否继续?`, '提示', {
         confirmButtonText: '确认',
         cancelButtonText: '取消',
@@ -159,10 +187,9 @@ export default {
       ...toRefs(state),
     };
   },
-};
+});
 </script>
 
 <style scoped lang="scss">
-.system-user-container {
-}
+
 </style>

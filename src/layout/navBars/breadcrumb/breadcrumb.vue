@@ -2,7 +2,8 @@
   <div class="layout-navbars-breadcrumb" :style="{ display: isShowBreadcrumb }">
     <SvgIcon
       class="layout-navbars-breadcrumb-icon"
-      :name="getThemeConfig.isCollapse ? 'elementExpand' : 'elementFold'"
+      :name="getThemeConfig.isCollapse ? 'ele-Expand' : 'ele-Fold'"
+      :size="16"
       @click="onThemeConfigChange"
     />
     <el-breadcrumb class="layout-navbars-breadcrumb-hide">
@@ -31,18 +32,26 @@
 </template>
 
 <script lang="ts">
-import { computed, getCurrentInstance, onMounted, reactive, toRefs } from 'vue';
+import { computed, defineComponent, onMounted, reactive, toRefs } from 'vue';
 import { onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router';
 import { useStore } from '/@/store';
+import { Local } from '/@/utils/storage';
 
-export default {
+// 定义接口来定义对象的类型
+interface BreadcrumbState {
+  breadcrumbList: Array<any>;
+  routeSplit: Array<string>;
+  routeSplitFirst: string;
+  routeSplitIndex: number;
+}
+
+export default defineComponent({
   name: 'layoutBreadcrumb',
   setup() {
-    const { proxy } = getCurrentInstance() as any;
     const store = useStore();
     const route = useRoute();
     const router = useRouter();
-    const state: any = reactive({
+    const state = reactive<BreadcrumbState>({
       breadcrumbList: [],
       routeSplit: [],
       routeSplitFirst: '',
@@ -73,8 +82,13 @@ export default {
     };
     // 展开/收起左侧菜单点击
     const onThemeConfigChange = () => {
-      proxy.mittBus.emit('onMenuClick');
       store.state.themeConfig.themeConfig.isCollapse = !store.state.themeConfig.themeConfig.isCollapse;
+      setLocalThemeConfig();
+    };
+    // 存储布局配置
+    const setLocalThemeConfig = () => {
+      Local.remove('themeConfig');
+      Local.set('themeConfig', getThemeConfig.value);
     };
     // 处理面包屑数据
     const getBreadcrumbList = (arr: Array<object>) => {
@@ -119,7 +133,7 @@ export default {
       ...toRefs(state),
     };
   },
-};
+});
 </script>
 
 <style scoped lang="scss">
@@ -134,12 +148,12 @@ export default {
     cursor: pointer;
     font-size: 18px;
     margin-right: 15px;
-    color: var(--bg-topBarColor);
+    color: var(--next-bg-topBarColor);
   }
 
   .layout-navbars-breadcrumb-span {
     opacity: 0.7;
-    color: var(--bg-topBarColor);
+    color: var(--next-bg-topBarColor);
   }
 
   .layout-navbars-breadcrumb-iconfont {
@@ -149,7 +163,16 @@ export default {
 
   ::v-deep(.el-breadcrumb__separator) {
     opacity: 0.7;
-    color: var(--bg-topBarColor);
+    color: var(--next-bg-topBarColor);
+  }
+
+  ::v-deep(.el-breadcrumb__inner a, .el-breadcrumb__inner.is-link) {
+    font-weight: unset !important;
+    color: var(--next-bg-topBarColor);
+
+    &:hover {
+      color: var(--el-color-primary) !important;
+    }
   }
 }
 </style>

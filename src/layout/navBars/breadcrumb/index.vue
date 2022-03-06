@@ -8,7 +8,7 @@
 </template>
 
 <script lang="ts">
-import { computed, getCurrentInstance, onMounted, onUnmounted, reactive, toRefs } from 'vue';
+import { computed, defineComponent, getCurrentInstance, onMounted, onUnmounted, reactive, toRefs } from 'vue';
 import { useRoute } from 'vue-router';
 import { useStore } from '/@/store';
 import Breadcrumb from '/@/layout/navBars/breadcrumb/breadcrumb.vue';
@@ -16,19 +16,20 @@ import User from '/@/layout/navBars/breadcrumb/user.vue';
 import Logo from '/@/layout/logo/index.vue';
 import Horizontal from '/@/layout/navMenu/horizontal.vue';
 
-export default {
+// 定义接口来定义对象的类型
+interface IndexState {
+  menuList: object[];
+}
+
+export default defineComponent({
   name: 'layoutBreadcrumbIndex',
   components: { Breadcrumb, User, Logo, Horizontal },
   setup() {
-    const { proxy } = getCurrentInstance() as any;
+    const { proxy } = <any>getCurrentInstance();
     const store = useStore();
     const route = useRoute();
-    const state: any = reactive({
+    const state = reactive<IndexState>({
       menuList: [],
-    });
-    // 获取布局配置信息
-    const getThemeConfig = computed(() => {
-      return store.state.themeConfig.themeConfig;
     });
     // 设置 logo 显示/隐藏
     const setIsShowLogo = computed(() => {
@@ -100,13 +101,12 @@ export default {
       proxy.mittBus.off('getBreadcrumbIndexSetFilterRoutes');
     });
     return {
-      getThemeConfig,
       setIsShowLogo,
       isLayoutTransverse,
       ...toRefs(state),
     };
   },
-};
+});
 </script>
 
 <style scoped lang="scss">
@@ -115,7 +115,7 @@ export default {
   display: flex;
   align-items: center;
   padding-right: 15px;
-  background: var(--bg-topBar);
-  border-bottom: 1px solid #f1f2f3;
+  background: var(--next-bg-topBar);
+  border-bottom: 1px solid var(--next-border-color-light);
 }
 </style>

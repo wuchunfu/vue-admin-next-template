@@ -8,10 +8,10 @@
 </template>
 
 <script lang="ts">
-import { reactive, toRefs } from 'vue';
+import { defineComponent, reactive, toRefs } from 'vue';
 import { onBeforeRouteUpdate } from 'vue-router';
 
-export default {
+export default defineComponent({
   name: 'layoutFooter',
   setup() {
     const state = reactive({
@@ -19,16 +19,18 @@ export default {
     });
     // 路由改变时，等主界面动画加载完毕再显示 footer
     onBeforeRouteUpdate(() => {
-      state.isDelayFooter = false;
       setTimeout(() => {
-        state.isDelayFooter = true;
-      }, 800);
+        state.isDelayFooter = false;
+        setTimeout(() => {
+          state.isDelayFooter = true;
+        }, 800);
+      }, 0);
     });
     return {
       ...toRefs(state),
     };
   },
-};
+});
 </script>
 
 <style scoped lang="scss">
@@ -40,7 +42,7 @@ export default {
     margin: auto;
     color: var(--el-text-color-secondary);
     text-align: center;
-    animation: logoAnimation 0.3s ease-in-out;
+    animation: error-num 1s ease-in-out;
   }
 }
 </style>

@@ -47,20 +47,43 @@
 </template>
 
 <script lang="ts">
-import { computed, getCurrentInstance, nextTick, onMounted, onUnmounted, reactive, ref, toRefs, watch } from 'vue';
-import { onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router';
+import {
+  computed,
+  defineComponent,
+  getCurrentInstance,
+  nextTick,
+  onMounted,
+  onUnmounted,
+  reactive,
+  ref,
+  toRefs,
+  watch
+} from 'vue';
+import { onBeforeRouteUpdate, RouteRecordRaw, useRoute, useRouter } from 'vue-router';
 import { useStore } from '/@/store';
 
-export default {
+// 定义接口来定义对象的类型
+interface ColumnsAsideState {
+  columnsAsideList: any[];
+  liIndex: number;
+  liOldIndex: null | number;
+  liHoverIndex: null | number;
+  liOldPath: null | string;
+  difference: number;
+  routeSplit: string[];
+  isNavHover: boolean;
+}
+
+export default defineComponent({
   name: 'layoutColumnsAside',
   setup() {
     const columnsAsideOffsetTopRefs: any = ref([]);
     const columnsAsideActiveRef = ref();
-    const { proxy } = getCurrentInstance() as any;
+    const { proxy } = <any>getCurrentInstance();
     const store = useStore();
     const route = useRoute();
     const router = useRouter();
-    const state: any = reactive({
+    const state = reactive<ColumnsAsideState>({
       columnsAsideList: [],
       liIndex: 0,
       liOldIndex: null,
@@ -94,7 +117,7 @@ export default {
       }
     };
     // 鼠标移入时，显示当前的子级菜单
-    const onColumnsAsideMenuMouseenter = (v: any, k: number) => {
+    const onColumnsAsideMenuMouseenter = (v: RouteRecordRaw, k: number) => {
       let { path } = v;
       state.liOldPath = path;
       state.liOldIndex = k;
@@ -170,11 +193,11 @@ export default {
       }
       // 延迟拿值，防止取不到
       setTimeout(() => {
-        onColumnsAsideDown(currentSplitRoute.k);
+        onColumnsAsideDown((<any>currentSplitRoute).k);
       }, 0);
     };
     // 监听布局配置信息的变化，动态增加菜单高亮位置移动像素
-    watch(store.state, (val) => {
+    watch(store.state, (val: any) => {
       val.themeConfig.themeConfig.columnsAsideStyle === 'columnsRound' ? (state.difference = 3) : (state.difference = 0);
       if (!val.routesList.isColumnsMenuHover && !val.routesList.isColumnsNavHover) {
         state.liHoverIndex = null;
@@ -201,7 +224,7 @@ export default {
       });
     });
     // 路由更新时
-    onBeforeRouteUpdate((to) => {
+    onBeforeRouteUpdate((to: any) => {
       setColumnsMenuHighlight(to.path);
       proxy.mittBus.emit('setSendColumnsChildren', setSendChildren(to.path));
     });
@@ -217,20 +240,20 @@ export default {
       ...toRefs(state),
     };
   },
-};
+});
 </script>
 
 <style scoped lang="scss">
 .layout-columns-aside {
   width: 70px;
   height: 100%;
-  background: var(--bg-columnsMenuBar);
+  background: var(--next-bg-columnsMenuBar);
 
   ul {
     position: relative;
 
     li {
-      color: var(--bg-columnsMenuBarColor);
+      color: var(--next-bg-columnsMenuBarColor);
       width: 100%;
       height: 50px;
       text-align: center;
@@ -269,26 +292,26 @@ export default {
 
       a {
         text-decoration: none;
-        color: var(--bg-columnsMenuBarColor);
+        color: var(--next-bg-columnsMenuBarColor);
       }
     }
 
     .layout-columns-active {
-      color: var(--color-whites) !important;
+      color: var(--el-color-white);
       transition: 0.3s ease-in-out;
     }
 
     .layout-columns-hover {
-      color: var(--color-primary);
+      color: var(--el-color-primary);
 
       a {
-        color: var(--color-primary);
+        color: var(--el-color-primary);
       }
     }
 
     .columns-round {
-      background: var(--color-primary);
-      color: var(--color-whites);
+      background: var(--el-color-primary);
+      color: var(--el-color-white);
       position: absolute;
       left: 50%;
       top: 2px;

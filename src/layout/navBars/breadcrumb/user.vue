@@ -6,7 +6,7 @@
       </div>
       <template #dropdown>
         <el-dropdown-menu>
-          <el-dropdown-item command="" :disabled="disabledSize === ''">
+          <el-dropdown-item command="default" :disabled="disabledSize === 'default'">
             {{ $t('message.user.dropdownDefault') }}
           </el-dropdown-item>
           <el-dropdown-item command="large" :disabled="disabledSize === 'large'">
@@ -36,7 +36,7 @@
     </el-dropdown>
     <div class="layout-navbars-breadcrumb-user-icon" @click="onSearchClick">
       <el-icon :title="$t('message.user.title2')">
-        <elementSearch/>
+        <ele-Search/>
       </el-icon>
     </div>
     <div class="layout-navbars-breadcrumb-user-icon" @click="onLayoutSetingClick">
@@ -53,9 +53,9 @@
     <el-dropdown :show-timeout="70" :hide-timeout="50" @command="onHandleCommandClick">
 			<span class="layout-navbars-breadcrumb-user-link">
 				<img :src="getUserInfos.photo" class="layout-navbars-breadcrumb-user-link-photo mr5" alt=""/>
-				{{ getUserInfos.userName === '' ? 'test' : getUserInfos.userName }}
+				{{ getUserInfos.userName === '' ? 'common' : getUserInfos.userName }}
 				<el-icon class="el-icon--right">
-					<elementArrowDown/>
+					<ele-ArrowDown/>
 				</el-icon>
 			</span>
       <template #dropdown>
@@ -72,33 +72,34 @@
 </template>
 
 <script lang="ts">
-import { computed, getCurrentInstance, onMounted, reactive, ref, toRefs } from 'vue';
+import { computed, defineComponent, getCurrentInstance, onMounted, reactive, ref, toRefs } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import screenfull from 'screenfull';
 import { useI18n } from 'vue-i18n';
+import { resetRoute } from '/@/router';
 import { useStore } from '/@/store';
 import other from '/@/utils/other';
 import { Local, Session } from '/@/utils/storage';
 import Search from '/@/layout/navBars/breadcrumb/search.vue';
 
-export default {
+export default defineComponent({
   name: 'layoutBreadcrumbUser',
   components: { Search },
   setup() {
     const { t } = useI18n();
-    const { proxy } = getCurrentInstance() as any;
+    const { proxy } = <any>getCurrentInstance();
     const router = useRouter();
     const store = useStore();
     const searchRef = ref();
     const state = reactive({
       isScreenfull: false,
       disabledI18n: 'zh-cn',
-      disabledSize: '',
+      disabledSize: 'large',
     });
     // 获取用户信息 vuex
     const getUserInfos = computed(() => {
-      return store.state.userInfos.userInfos;
+      return <any>store.state.userInfos.userInfos;
     });
     // 获取布局配置信息
     const getThemeConfig = computed(() => {
@@ -106,12 +107,13 @@ export default {
     });
     // 设置分割样式
     const layoutUserFlexNum = computed(() => {
-      let { layout, isClassicSplitMenu } = getThemeConfig.value;
-      let num;
-      if (layout === 'defaults' || (layout === 'classic' && !isClassicSplitMenu) || layout === 'columns') {
-        num = 1;
+      let num: string | number = '';
+      const { layout, isClassicSplitMenu } = getThemeConfig.value;
+      const layoutArr: string[] = ['defaults', 'columns'];
+      if (layoutArr.includes(layout) || (layout === 'classic' && !isClassicSplitMenu)) {
+        num = '1';
       } else {
-        num = null;
+        num = '';
       }
       return num;
     });
@@ -145,7 +147,7 @@ export default {
           showCancelButton: true,
           confirmButtonText: t('message.user.logOutConfirm'),
           cancelButtonText: t('message.user.logOutCancel'),
-          beforeClose: (action, instance, done) => {
+          beforeClose: (action: any, instance: any, done: any) => {
             if (action === 'confirm') {
               instance.confirmButtonLoading = true;
               instance.confirmButtonText = t('message.user.logOutExit');
@@ -159,12 +161,13 @@ export default {
               done();
             }
           },
-        }).then(() => {
+        }).then(async () => {
           Session.clear(); // 清除缓存/token等
-          router.push('/login');
+          await resetRoute(); // 删除/重置路由
+          ElMessage.success(t('message.user.logOutSuccess'));
           setTimeout(() => {
-            ElMessage.success(t('message.user.logOutSuccess'));
-          }, 300);
+            window.location.href = ''; // 去登录页
+          }, 500);
         }).catch(() => {
         });
       } else if (path === 'wareHouse') {
@@ -182,7 +185,6 @@ export default {
       Local.remove('themeConfig');
       getThemeConfig.value.globalComponentSize = size;
       Local.set('themeConfig', getThemeConfig.value);
-      proxy.disabledSize = size;
       initComponentSize();
       window.location.reload();
     };
@@ -215,8 +217,8 @@ export default {
     // 初始化全局组件大小
     const initComponentSize = () => {
       switch (Local.get('themeConfig').globalComponentSize) {
-        case '':
-          state.disabledSize = '';
+        case 'default':
+          state.disabledSize = 'default';
           break;
         case 'large':
           state.disabledSize = 'large';
@@ -246,7 +248,7 @@ export default {
       ...toRefs(state),
     };
   },
-};
+});
 </script>
 
 <style scoped lang="scss">
@@ -271,14 +273,14 @@ export default {
   &-icon {
     padding: 0 10px;
     cursor: pointer;
-    color: var(--bg-topBarColor);
+    color: var(--next-bg-topBarColor);
     height: 50px;
     line-height: 50px;
     display: flex;
     align-items: center;
 
     &:hover {
-      background: rgba(0, 0, 0, 0.04);
+      background: var(--next-color-user-hover);
 
       i {
         display: inline-block;
@@ -288,7 +290,7 @@ export default {
   }
 
   ::v-deep(.el-dropdown) {
-    color: var(--bg-topBarColor);
+    color: var(--next-bg-topBarColor);
   }
 
   ::v-deep(.el-badge) {

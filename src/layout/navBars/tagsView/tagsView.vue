@@ -7,7 +7,7 @@
           v-for="(v, k) in tagsViewList"
           :key="k"
           class="layout-navbars-tagsview-ul-li"
-          :data-name="v.name"
+          :data-url="v.url"
           :class="{ 'is-active': isActive(v) }"
           @contextmenu.prevent="onContextmenu(v, $event)"
           @click="onTagsClick(v, k)"
@@ -17,28 +17,24 @@
 						}
 					"
         >
-          <i class="iconfont icon-webicon318 layout-navbars-tagsview-ul-li-iconfont font14" v-if="isActive(v)"></i>
-          <SvgIcon
-            :name="v.meta.icon"
-            class="layout-navbars-tagsview-ul-li-iconfont"
-            v-if="!isActive(v) && getThemeConfig.isTagsviewIcon"
-          />
+          <i class="iconfont icon-webicon318 layout-navbars-tagsview-ul-li-iconfont" v-if="isActive(v)"></i>
+          <SvgIcon :name="v.meta.icon" v-if="!isActive(v) && getThemeConfig.isTagsviewIcon"/>
           <span>{{ $t(v.meta.title) }}</span>
           <template v-if="isActive(v)">
             <SvgIcon
-              name="elementRefreshRight"
+              name="ele-RefreshRight"
               class="ml5 layout-navbars-tagsview-ul-li-refresh"
               @click.stop="refreshCurrentTagsView($route.fullPath)"
             />
             <SvgIcon
-              name="elementClose"
+              name="ele-Close"
               class="layout-navbars-tagsview-ul-li-icon layout-icon-active"
               v-if="!v.meta.isAffix"
               @click.stop="closeCurrentTagsView(getThemeConfig.isShareTagsView ? v.path : v.url)"
             />
           </template>
           <SvgIcon
-            name="elementClose"
+            name="ele-Close"
             class="layout-navbars-tagsview-ul-li-icon layout-icon-three"
             v-if="!v.meta.isAffix"
             @click.stop="closeCurrentTagsView(getThemeConfig.isShareTagsView ? v.path : v.url)"
@@ -53,6 +49,7 @@
 <script lang="ts">
 import {
   computed,
+  defineComponent,
   getCurrentInstance,
   nextTick,
   onBeforeMount,
@@ -62,7 +59,7 @@ import {
   reactive,
   ref,
   toRefs,
-  watch
+  watch,
 } from 'vue';
 import { onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router';
 import Sortable from 'sortablejs';
@@ -73,19 +70,48 @@ import { isObjectValueEqual } from '/@/utils/arrayOperation';
 import other from '/@/utils/other';
 import Contextmenu from '/@/layout/navBars/tagsView/contextmenu.vue';
 
-export default {
+// 定义接口来定义对象的类型
+interface TagsViewState {
+  routeActive: string;
+  routePath: string | unknown;
+  dropdown: {
+    x: string | number;
+    y: string | number;
+  };
+  tagsRefsIndex: number;
+  tagsViewList: any[];
+  sortable: any;
+  tagsViewRoutesList: any[];
+}
+
+interface RouteParams {
+  path: string;
+  url: string;
+}
+
+interface CurrentContextmenu {
+  meta: {
+    isDynamic: boolean;
+  };
+  params: any;
+  query: any;
+  path: string;
+  contextMenuClickId: string | number;
+}
+
+export default defineComponent({
   name: 'layoutTagsView',
   components: { Contextmenu },
   setup() {
-    const { proxy } = getCurrentInstance() as any;
-    const tagsRefs = ref([]);
+    const { proxy } = <any>getCurrentInstance();
+    const tagsRefs = ref<any[]>([]);
     const scrollbarRef = ref();
     const contextmenuRef = ref();
     const tagsUlRef = ref();
     const store = useStore();
     const route = useRoute();
     const router = useRouter();
-    const state: any = reactive({
+    const state = reactive<TagsViewState>({
       routeActive: '',
       routePath: route.path,
       dropdown: { x: '', y: '' },
@@ -103,7 +129,7 @@ export default {
       return store.state.themeConfig.themeConfig;
     });
     // 设置 tagsView 高亮
-    const isActive = (v: any) => {
+    const isActive = (v: RouteParams) => {
       if (getThemeConfig.value.isShareTagsView) {
         return v.path === state.routePath;
       } else {
@@ -186,7 +212,7 @@ export default {
       // 防止拿取不到路由信息
       nextTick(async () => {
         // 修复：https://gitee.com/lyt-top/vue-next-admin/issues/I3YX6G
-        let item;
+        let item: any = '';
         if (to && to.meta.isDynamic) {
           // 动态路由（xxx/:id/:name"）：参数不同，开启多个 tagsview
           if (!getThemeConfig.value.isShareTagsView) {
@@ -313,7 +339,7 @@ export default {
       });
     };
     // 当前项右键菜单点击
-    const onCurrentContextmenuClick = async (item: any) => {
+    const onCurrentContextmenuClick = async (item: CurrentContextmenu) => {
       const cParams = item.meta.isDynamic ? item.params : item.query;
       if (!getCurrentRouteItem(item.path, cParams)) return ElMessage({
         type: 'warning',
@@ -447,7 +473,7 @@ export default {
       });
     };
     // 获取 tagsView 的下标：用于处理 tagsView 点击时的横向滚动
-    const getTagsRefsIndex = (path: string) => {
+    const getTagsRefsIndex = (path: string | unknown) => {
       nextTick(async () => {
         // await 使用该写法，防止拿取不到 tagsViewList 列表数据不完整
         let tagsViewList = await state.tagsViewList;
@@ -464,7 +490,7 @@ export default {
     };
     // 设置 tagsView 可以进行拖拽
     const initSortable = async () => {
-      const el = document.querySelector('.layout-navbars-tagsview-ul') as HTMLElement;
+      const el = <HTMLElement>document.querySelector('.layout-navbars-tagsview-ul');
       if (!el) {
         return false;
       }
@@ -477,7 +503,7 @@ export default {
           const sortEndList: any = [];
           state.sortable.toArray().map((val: any) => {
             state.tagsViewList.map((v: any) => {
-              if (v.name === val) {
+              if (v.url === val) {
                 sortEndList.push({ ...v });
               }
             });
@@ -500,7 +526,7 @@ export default {
       // 拖动问题，https://gitee.com/lyt-top/vue-next-admin/issues/I3ZRRI
       window.addEventListener('resize', onSortableResize);
       // 监听非本页面调用 0 刷新当前，1 关闭当前，2 关闭其它，3 关闭全部 4 当前页全屏
-      proxy.mittBus.on('onCurrentContextmenuClick', (data: object) => {
+      proxy.mittBus.on('onCurrentContextmenuClick', (data: CurrentContextmenu) => {
         onCurrentContextmenuClick(data);
       });
       // 监听布局配置界面开启/关闭拖拽
@@ -543,14 +569,14 @@ export default {
       initSortable();
     });
     // 路由更新时
-    onBeforeRouteUpdate(async (to) => {
+    onBeforeRouteUpdate(async (to: any) => {
       state.routeActive = setTagsViewHighlight(to);
       state.routePath = to.meta.isDynamic ? to.meta.isDynamicPath : to.path;
       await addTagsView(to.path, to);
       getTagsRefsIndex(getThemeConfig.value.isShareTagsView ? state.routePath : state.routeActive);
     });
     // 监听路由的变化，动态赋值给 tagsView
-    watch(store.state, (val) => {
+    watch(store.state, (val: any) => {
       if (val.tagsViewRoutes.tagsViewRoutes.length === state.tagsViewRoutesList.length) {
         return false;
       }
@@ -559,7 +585,6 @@ export default {
     return {
       isActive,
       onContextmenu,
-      getTagsViewRoutes,
       onTagsClick,
       tagsRefs,
       contextmenuRef,
@@ -574,13 +599,13 @@ export default {
       ...toRefs(state),
     };
   },
-};
+});
 </script>
 
 <style scoped lang="scss">
 .layout-navbars-tagsview {
   background-color: var(--el-color-white);
-  border-bottom: 1px solid #f1f2f3;
+  border-bottom: 1px solid var(--next-border-color-light);
   position: relative;
   z-index: 4;
 
@@ -614,9 +639,9 @@ export default {
       justify-content: space-between;
 
       &:hover {
-        background-color: var(--color-primary-light-9);
-        color: var(--color-primary);
-        border-color: var(--color-primary-light-6);
+        background-color: var(--el-color-primary-light-9);
+        color: var(--el-color-primary);
+        border-color: var(--el-color-primary-light-6);
       }
 
       &-iconfont {
@@ -635,8 +660,8 @@ export default {
         right: -5px;
 
         &:hover {
-          color: var(--color-whites);
-          background-color: var(--color-primary-light-3);
+          color: var(--el-color-white);
+          background-color: var(--el-color-primary-light-3);
         }
       }
 
@@ -650,72 +675,10 @@ export default {
     }
 
     .is-active {
-      color: var(--color-whites);
-      background: var(--color-primary);
-      border-color: var(--color-primary);
+      color: var(--el-color-white);
+      background: var(--el-color-primary);
+      border-color: var(--el-color-primary);
       transition: border-color 3s ease;
-    }
-  }
-
-  // 风格2
-  .tags-style-two {
-    .layout-navbars-tagsview-ul-li {
-      height: 34px !important;
-      line-height: 34px !important;
-      border: none !important;
-
-      .layout-navbars-tagsview-ul-li-iconfont {
-        display: none;
-      }
-
-      .layout-icon-active {
-        display: none;
-      }
-
-      .layout-icon-three {
-        display: block;
-      }
-    }
-
-    .is-active {
-      background: none !important;
-      color: var(--color-primary) !important;
-      border-bottom: 2px solid !important;
-      border-color: var(--color-primary) !important;
-      border-radius: 0 !important;
-    }
-  }
-
-  // 风格3
-  .tags-style-three {
-    .layout-navbars-tagsview-ul-li {
-      height: 34px !important;
-      line-height: 34px !important;
-      border-right: 1px solid #f6f6f6 !important;
-      border-top: none !important;
-      border-bottom: none !important;
-      border-left: none !important;
-      border-radius: 0 !important;
-      margin-right: 0 !important;
-
-      &:first-of-type {
-        border-left: 1px solid #f6f6f6 !important;
-      }
-
-      .layout-icon-active {
-        display: none;
-      }
-
-      .layout-icon-three {
-        display: block;
-      }
-    }
-
-    .is-active {
-      background: var(--el-color-white) !important;
-      color: var(--color-primary) !important;
-      border-top: 1px solid !important;
-      border-top-color: var(--color-primary) !important;
     }
   }
 
@@ -742,7 +705,7 @@ export default {
 
     .is-active {
       background: none !important;
-      color: var(--color-primary) !important;
+      color: var(--el-color-primary) !important;
     }
   }
 
@@ -773,13 +736,15 @@ export default {
 
       &:hover {
         @extend .tags-style-five-svg;
-        background: var(--color-primary-light-9);
+        background: var(--el-color-primary-light-9);
+        color: unset;
       }
     }
 
     .is-active {
       @extend .tags-style-five-svg;
-      background: var(--color-primary) !important;
+      background: var(--el-color-primary-light-9) !important;
+      color: var(--el-color-primary) !important;
       z-index: 1;
     }
   }

@@ -46,7 +46,7 @@ export function rgbToHex(r: any, g: any, b: any) {
  * @param level 加深的程度，限0-1之间
  * @returns 返回处理后的颜色值
  */
-export function getDarkColor(color: any, level: number) {
+export function getDarkColor(color: string, level: number) {
   let reg = /^\#?[0-9A-Fa-f]{6}$/;
   if (!reg.test(color)) {
     return ElMessage.warning('输入错误的hex颜色值');
@@ -64,7 +64,7 @@ export function getDarkColor(color: any, level: number) {
  * @param level 加深的程度，限0-1之间
  * @returns 返回处理后的颜色值
  */
-export function getLightColor(color: any, level: number) {
+export function getLightColor(color: string, level: number) {
   let reg = /^\#?[0-9A-Fa-f]{6}$/;
   if (!reg.test(color)) {
     return ElMessage.warning('输入错误的hex颜色值');
