@@ -10,7 +10,9 @@
 <script lang="ts">
 import { computed, defineComponent, getCurrentInstance, onMounted, onUnmounted, reactive, toRefs } from 'vue';
 import { useRoute } from 'vue-router';
-import { useStore } from '/@/store';
+import { storeToRefs } from 'pinia';
+import { useRoutesList } from '/@/stores/routesList';
+import { useThemeConfig } from '/@/stores/themeConfig';
 import Breadcrumb from '/@/layout/navBars/breadcrumb/breadcrumb.vue';
 import User from '/@/layout/navBars/breadcrumb/user.vue';
 import Logo from '/@/layout/logo/index.vue';
@@ -26,34 +28,37 @@ export default defineComponent({
   components: { Breadcrumb, User, Logo, Horizontal },
   setup() {
     const { proxy } = <any>getCurrentInstance();
-    const store = useStore();
+    const stores = useRoutesList();
+    const storesThemeConfig = useThemeConfig();
+    const { themeConfig } = storeToRefs(storesThemeConfig);
+    const { routesList } = storeToRefs(stores);
     const route = useRoute();
     const state = reactive<IndexState>({
       menuList: [],
     });
     // 设置 logo 显示/隐藏
     const setIsShowLogo = computed(() => {
-      let { isShowLogo, layout } = store.state.themeConfig.themeConfig;
+      let { isShowLogo, layout } = themeConfig.value;
       return (isShowLogo && layout === 'classic') || (isShowLogo && layout === 'transverse');
     });
     // 设置是否显示横向导航菜单
     const isLayoutTransverse = computed(() => {
-      let { layout, isClassicSplitMenu } = store.state.themeConfig.themeConfig;
+      let { layout, isClassicSplitMenu } = themeConfig.value;
       return layout === 'transverse' || (isClassicSplitMenu && layout === 'classic');
     });
     // 设置/过滤路由（非静态路由/是否显示在菜单中）
     const setFilterRoutes = () => {
-      let { layout, isClassicSplitMenu } = store.state.themeConfig.themeConfig;
+      let { layout, isClassicSplitMenu } = themeConfig.value;
       if (layout === 'classic' && isClassicSplitMenu) {
-        state.menuList = delClassicChildren(filterRoutesFun(store.state.routesList.routesList));
+        state.menuList = delClassicChildren(filterRoutesFun(routesList.value));
         const resData = setSendClassicChildren(route.path);
         proxy.mittBus.emit('setSendClassicChildren', resData);
       } else {
-        state.menuList = filterRoutesFun(store.state.routesList.routesList);
+        state.menuList = filterRoutesFun(routesList.value);
       }
     };
     // 设置了分割菜单时，删除底下 children
-    const delClassicChildren = (arr: Array<object>) => {
+    const delClassicChildren = (arr: Array<string>) => {
       arr.map((v: any) => {
         if (v.children) {
           delete v.children;
@@ -77,7 +82,7 @@ export default defineComponent({
     const setSendClassicChildren = (path: string) => {
       const currentPathSplit = path.split('/');
       let currentData: any = {};
-      filterRoutesFun(store.state.routesList.routesList).map((v, k) => {
+      filterRoutesFun(routesList.value).map((v, k) => {
         if (v.path === `/${ currentPathSplit[1] }`) {
           v['k'] = k;
           currentData['item'] = [{ ...v }];
@@ -98,7 +103,7 @@ export default defineComponent({
     });
     // 页面卸载时
     onUnmounted(() => {
-      proxy.mittBus.off('getBreadcrumbIndexSetFilterRoutes');
+      proxy.mittBus.off('getBreadcrumbIndexSetFilterRoutes', () => {});
     });
     return {
       setIsShowLogo,
@@ -114,7 +119,6 @@ export default defineComponent({
   height: 50px;
   display: flex;
   align-items: center;
-  padding-right: 15px;
   background: var(--next-bg-topBar);
   border-bottom: 1px solid var(--next-border-color-light);
 }

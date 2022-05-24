@@ -49,9 +49,9 @@
             </div>
           </div>
           <div class="layout-lock-screen-login-icon">
-            <SvgIcon name="ele-Microphone"/>
-            <SvgIcon name="ele-AlarmClock"/>
-            <SvgIcon name="ele-SwitchButton"/>
+            <SvgIcon name="ele-Microphone" :size="20"/>
+            <SvgIcon name="ele-AlarmClock" :size="20"/>
+            <SvgIcon name="ele-SwitchButton" :size="20"/>
           </div>
         </div>
       </transition>
@@ -61,7 +61,8 @@
 
 <script lang="ts">
 import { defineComponent, getCurrentInstance, nextTick, onMounted, onUnmounted, reactive, ref, toRefs } from 'vue';
-import { useStore } from '/@/store';
+import { storeToRefs } from 'pinia';
+import { useThemeConfig } from '/@/stores/themeConfig';
 import { formatDate } from '/@/utils/formatTime';
 import { Local } from '/@/utils/storage';
 
@@ -89,7 +90,8 @@ export default defineComponent({
   setup() {
     const { proxy } = <any>getCurrentInstance();
     const layoutLockScreenInputRef = ref();
-    const store = useStore();
+    const storesThemeConfig = useThemeConfig();
+    const { themeConfig } = storeToRefs(storesThemeConfig);
     const state = reactive<LockScreenState>({
       transparency: 1,
       downClientY: 0,
@@ -168,14 +170,14 @@ export default defineComponent({
     };
     // 锁屏时间定时器
     const initLockScreen = () => {
-      if (store.state.themeConfig.themeConfig.isLockScreen) {
+      if (themeConfig.value.isLockScreen) {
         state.isShowLockScreenIntervalTime = window.setInterval(() => {
-          if (store.state.themeConfig.themeConfig.lockScreenTime <= 1) {
+          if (themeConfig.value.lockScreenTime <= 1) {
             state.isShowLockScreen = true;
             setLocalThemeConfig();
             return false;
           }
-          store.state.themeConfig.themeConfig.lockScreenTime--;
+          themeConfig.value.lockScreenTime--;
         }, 1000);
       } else {
         clearInterval(state.isShowLockScreenIntervalTime);
@@ -183,13 +185,13 @@ export default defineComponent({
     };
     // 存储布局配置
     const setLocalThemeConfig = () => {
-      store.state.themeConfig.themeConfig.isDrawer = false;
-      Local.set('themeConfig', store.state.themeConfig.themeConfig);
+      themeConfig.value.isDrawer = false;
+      Local.set('themeConfig', themeConfig.value);
     };
     // 密码输入点击事件
     const onLockScreenSubmit = () => {
-      store.state.themeConfig.themeConfig.isLockScreen = false;
-      store.state.themeConfig.themeConfig.lockScreenTime = 30;
+      themeConfig.value.isLockScreen = false;
+      themeConfig.value.lockScreenTime = 30;
       setLocalThemeConfig();
     };
     // 页面加载时
@@ -262,12 +264,12 @@ export default defineComponent({
 
       &-time {
         font-size: 100px;
-        color: var(--color-whites);
+        color: var(--el-color-white);
       }
 
       &-info {
         font-size: 40px;
-        color: var(--color-whites);
+        color: var(--el-color-white);
       }
 
       &-minutes {
@@ -282,7 +284,7 @@ export default defineComponent({
       border-radius: 100%;
       border: 1px solid var(--el-border-color-light, #ebeef5);
       background: rgba(255, 255, 255, 0.1);
-      color: var(--color-whites);
+      color: var(--el-color-white);
       opacity: 0.8;
       position: absolute;
       right: 30px;
@@ -300,7 +302,7 @@ export default defineComponent({
         position: absolute;
         top: 150%;
         font-size: 12px;
-        color: var(--color-whites);
+        color: var(--el-color-white);
         left: 50%;
         line-height: 1.2;
         transform: translate(-50%, -50%);
@@ -312,7 +314,7 @@ export default defineComponent({
         border: 1px solid rgba(255, 255, 255, 0.5);
         background: rgba(255, 255, 255, 0.2);
         box-shadow: 0 0 12px 0 rgba(255, 255, 255, 0.5);
-        color: var(--color-whites);
+        color: var(--el-color-white);
         opacity: 1;
         transition: all 0.3s ease;
 
@@ -340,7 +342,7 @@ export default defineComponent({
     display: flex;
     flex-direction: column;
     justify-content: center;
-    color: var(--color-whites);
+    color: var(--el-color-white);
 
     &-box {
       text-align: center;

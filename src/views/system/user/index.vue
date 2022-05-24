@@ -17,27 +17,33 @@
         </el-button>
       </div>
       <el-table :data="tableData.data" border style="width: 100%">
-        <el-table-column type="index" label="序号" width="60"></el-table-column>
-        <el-table-column prop="userName" label="账户名称" width="100" show-overflow-tooltip></el-table-column>
-        <el-table-column prop="userNickname" label="用户昵称" width="100" show-overflow-tooltip></el-table-column>
-        <el-table-column prop="roleSign" label="关联角色" width="100" show-overflow-tooltip></el-table-column>
-        <el-table-column prop="department" label="部门" width="100" show-overflow-tooltip></el-table-column>
-        <el-table-column prop="phone" label="手机号" width="100" show-overflow-tooltip></el-table-column>
-        <el-table-column prop="email" label="邮箱" width="100" show-overflow-tooltip></el-table-column>
-        <el-table-column prop="status" label="用户状态" width="100" show-overflow-tooltip>
+        <el-table-column type="index" label="序号" width="70" align="center"></el-table-column>
+        <el-table-column prop="userName" label="账户名称" width="100" show-overflow-tooltip
+                         align="center"></el-table-column>
+        <el-table-column prop="userNickname" label="用户昵称" width="100" show-overflow-tooltip
+                         align="center"></el-table-column>
+        <el-table-column prop="roleSign" label="关联角色" width="100" show-overflow-tooltip
+                         align="center"></el-table-column>
+        <el-table-column prop="department" label="部门" width="100" show-overflow-tooltip
+                         align="center"></el-table-column>
+        <el-table-column prop="phone" label="手机号" width="100" show-overflow-tooltip align="center"></el-table-column>
+        <el-table-column prop="email" label="邮箱" width="100" show-overflow-tooltip align="center"></el-table-column>
+        <el-table-column prop="status" label="用户状态" width="100" align="center">
           <template #default="scope">
             <el-tag type="success" v-if="scope.row.status">启用</el-tag>
             <el-tag type="info" v-else>禁用</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="describe" label="用户描述" show-overflow-tooltip></el-table-column>
-        <el-table-column prop="createTime" label="创建时间" width="170" show-overflow-tooltip sortable></el-table-column>
-        <el-table-column label="操作" width="100">
+        <el-table-column prop="createTime" label="创建时间" width="170" show-overflow-tooltip sortable
+                         align="center"></el-table-column>
+        <el-table-column label="操作" width="110" align="center">
           <template #default="scope">
             <el-button
               :disabled="scope.row.userName === 'admin'"
               size="small"
-              type="text"
+              type="primary"
+              link
               @click="onOpenEditUser(scope.row)"
             >
               修改
@@ -45,7 +51,8 @@
             <el-button
               :disabled="scope.row.userName === 'admin'"
               size="small"
-              type="text"
+              type="danger"
+              link
               @click="onRowDel(scope.row)"
             >
               删除
@@ -53,6 +60,7 @@
           </template>
         </el-table-column>
       </el-table>
+
       <el-pagination
         @size-change="onHandleSizeChange"
         @current-change="onHandleCurrentChange"

@@ -9,7 +9,8 @@
 <script lang="ts">
 import { computed, defineComponent, reactive, toRefs, watch } from 'vue';
 import { RouteMeta, useRoute } from 'vue-router';
-import { useStore } from '/@/store';
+import { storeToRefs } from 'pinia';
+import { useThemeConfig } from '/@/stores/themeConfig';
 
 // 定义接口来定义对象的类型
 interface LinkViewState {
@@ -28,7 +29,8 @@ export default defineComponent({
   name: 'layoutLinkView',
   setup() {
     const route = useRoute();
-    const store = useStore();
+    const storesThemeConfig = useThemeConfig();
+    const { themeConfig } = storeToRefs(storesThemeConfig);
     const state = reactive<LinkViewState>({
       currentRouteMeta: {
         isLink: '',
@@ -37,9 +39,9 @@ export default defineComponent({
     });
     // 设置 link 的高度
     const setLinkHeight = computed(() => {
-      let { isTagsview } = store.state.themeConfig.themeConfig;
+      let { isTagsview } = themeConfig.value;
       if (isTagsview) {
-        return `114px`;
+        return `115px`;
       } else {
         return `80px`;
       }

@@ -106,7 +106,6 @@ export default {
     logOutConfirm: 'determine',
     logOutCancel: 'cancel',
     logOutExit: 'Exiting',
-    logOutSuccess: 'Exit successfully!',
   },
   tagsView: {
     refresh: 'refresh',
@@ -173,7 +172,7 @@ export default {
     sixClassic: 'Two',
     sixTransverse: 'Three',
     sixColumns: 'Four',
-    tipText: 'Click the button below to copy the layout configuration to `/src/store/modules/themeConfig.ts` It has been modified in.',
+    tipText: 'Click the button below to copy the layout configuration to `/src/stores/themeConfig.ts` It has been modified in.',
     copyText: 'replication configuration',
     resetText: 'restore default',
     copyTextSuccess: 'Copy succeeded!',

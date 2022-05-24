@@ -19,13 +19,18 @@
 <script lang="ts">
 import { computed, defineComponent, nextTick, onMounted, reactive, toRefs, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import { useStore } from '/@/store';
+import { storeToRefs } from 'pinia';
+import { useThemeConfig } from '/@/stores/themeConfig';
+import { useTagsViewRoutes } from '/@/stores/tagsViewRoutes';
 
 export default defineComponent({
   name: 'layoutIframeView',
   setup() {
     const route = useRoute();
-    const store = useStore();
+    const storesThemeConfig = useThemeConfig();
+    const storesTagsViewRoutes = useTagsViewRoutes();
+    const { themeConfig } = storeToRefs(storesThemeConfig);
+    const { isTagsViewCurrenFull } = storeToRefs(storesTagsViewRoutes);
     const state = reactive({
       iframeLoading: true,
       iframeUrl: '' as any,
@@ -46,13 +51,12 @@ export default defineComponent({
     };
     // 设置 iframe 的高度
     const setIframeHeight = computed(() => {
-      let { isTagsview } = store.state.themeConfig.themeConfig;
-      let { isTagsViewCurrenFull } = store.state.tagsViewRoutes;
-      if (isTagsViewCurrenFull) {
+      let { isTagsview } = themeConfig.value;
+      if (isTagsViewCurrenFull.value) {
         return `1px`;
       } else {
         if (isTagsview) {
-          return `85px`;
+          return `86px`;
         } else {
           return `51px`;
         }

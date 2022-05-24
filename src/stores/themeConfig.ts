@@ -1,13 +1,16 @@
-import { Module } from 'vuex';
-import { RootStateTypes, ThemeConfigState } from '/@/store/interface';
+import { defineStore } from 'pinia';
+import { ThemeConfigState, ThemeConfigStates } from './interface';
 
 /**
- * 修改一下配置时，需要每次都清理 `window.localStorage` 浏览器永久缓存，配置才会生效
- * 哪个大佬有解决办法，欢迎pr，感谢💕！
+ * 布局配置
+ * 修复：https://gitee.com/lyt-top/vue-next-admin/issues/I567R1，感谢@lanbao123
+ * 2020.05.28 by lyt 优化。开发时配置不生效问题
+ * 修改配置时：
+ * 1、需要每次都清理 `window.localStorage` 浏览器永久缓存
+ * 2、或者点击布局配置最底部 `一键恢复默认` 按钮即可看到效果
  */
-const themeConfigModule: Module<ThemeConfigState, RootStateTypes> = {
-  namespaced: true,
-  state: {
+export const useThemeConfig = defineStore('themeConfig', {
+  state: (): ThemeConfigStates => ({
     themeConfig: {
       // 是否开启布局配置抽屉
       isDrawer: false,
@@ -17,7 +20,8 @@ const themeConfigModule: Module<ThemeConfigState, RootStateTypes> = {
        */
       // 默认 primary 主题颜色
       primary: '#409eff',
-
+      // 是否开启深色模式
+      isIsDark: false,
       /**
        * 菜单 / 顶栏
        * 注意：v1.0.17 版本去除设置布局切换，重置主题样式（initSetLayoutChange），
@@ -88,8 +92,6 @@ const themeConfigModule: Module<ThemeConfigState, RootStateTypes> = {
       isGrayscale: false,
       // 是否开启色弱模式
       isInvert: false,
-      // 是否开启深色模式
-      isIsDark: false,
       // 是否开启水印
       isWartermark: false,
       // 水印文案
@@ -126,27 +128,18 @@ const themeConfigModule: Module<ThemeConfigState, RootStateTypes> = {
        * 全局网站标题 / 副标题
        */
       // 网站主标题（菜单导航、浏览器当前网页标题）
-      globalTitle: 'vue-admin-next-template',
+      globalTitle: 'vue-next-admin',
       // 网站副标题（登录页顶部文字）
-      globalViceTitle: 'vue-admin-next-template',
+      globalViceTitle: 'vueNextAdmin',
       // 默认初始语言，可选值"<zh-cn|en|zh-tw>"，默认 zh-cn
       globalI18n: 'zh-cn',
       // 默认全局组件大小，可选值"<large|'default'|small>"，默认 'large'
       globalComponentSize: 'large',
     },
-  },
-  mutations: {
-    // 设置布局配置
-    getThemeConfig(state: any, data: object) {
-      state.themeConfig = data;
-    },
-  },
+  }),
   actions: {
-    // 设置布局配置
-    setThemeConfig({ commit }, data: object) {
-      commit('getThemeConfig', data);
+    setThemeConfig(data: ThemeConfigState) {
+      this.themeConfig = data;
     },
   },
-};
-
-export default themeConfigModule;
+});

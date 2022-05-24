@@ -22,11 +22,13 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, reactive, toRefs } from 'vue';
+import { computed, defineComponent, onMounted, reactive, toRefs } from 'vue';
 import Account from '/@/views/login/component/account.vue';
-import { useStore } from '/@/store';
+import { storeToRefs } from 'pinia';
+import { useThemeConfig } from '/@/stores/themeConfig';
 import logoMini from '/@/assets/logo-mini.svg';
 import loginIconTwo from '/@/assets/login-icon-two.svg';
+import { NextLoading } from '/@/utils/loading';
 
 // 定义接口来定义对象的类型
 interface LoginState {
@@ -37,13 +39,18 @@ export default defineComponent({
   name: 'login',
   components: { Account },
   setup() {
-    const store = useStore();
+    const storesThemeConfig = useThemeConfig();
+    const { themeConfig } = storeToRefs(storesThemeConfig);
     const state = reactive<LoginState>({
       tabsActiveName: 'account',
     });
     // 获取布局配置信息
     const getThemeConfig = computed(() => {
-      return store.state.themeConfig.themeConfig;
+      return themeConfig.value;
+    });
+    // 页面加载时
+    onMounted(() => {
+      NextLoading.done();
     });
     return {
       logoMini,

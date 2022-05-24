@@ -1,7 +1,7 @@
 import { createApp } from 'vue';
 import App from '/@/App.vue';
 import router from '/@/router';
-import { key, store } from '/@/store';
+import pinia from '/@/stores/index';
 import { directive } from '/@/utils/directive';
 import { i18n } from '/@/i18n';
 import other from '/@/utils/other';
@@ -16,8 +16,8 @@ const app = createApp(App);
 directive(app);
 other.elSvg(app);
 
-app.use(router)
-  .use(store, key)
+app.use(pinia)
+  .use(router)
   .use(ElementPlus, { i18n: i18n.global.t })
   .use(i18n)
   .mount('#app');

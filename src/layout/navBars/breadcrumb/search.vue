@@ -29,7 +29,8 @@
 import { defineComponent, nextTick, reactive, ref, toRefs } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import { useStore } from '/@/store';
+import { storeToRefs } from 'pinia';
+import { useTagsViewRoutes } from '/@/stores/tagsViewRoutes';
 
 // 定义接口来定义对象的类型
 interface SearchState {
@@ -50,7 +51,8 @@ export default defineComponent({
   setup() {
     const layoutMenuAutocompleteRef = ref();
     const { t } = useI18n();
-    const store = useStore();
+    const storesTagsViewRoutes = useTagsViewRoutes();
+    const { tagsViewRoutes } = storeToRefs(storesTagsViewRoutes);
     const router = useRouter();
     const state = reactive<SearchState>({
       isShowSearch: false,
@@ -63,7 +65,9 @@ export default defineComponent({
       state.isShowSearch = true;
       initTageView();
       nextTick(() => {
-        layoutMenuAutocompleteRef.value.focus();
+        setTimeout(() => {
+          layoutMenuAutocompleteRef.value.focus();
+        });
       });
     };
     // 搜索弹窗关闭
@@ -90,7 +94,7 @@ export default defineComponent({
       if (state.tagsViewList.length > 0) {
         return false;
       }
-      store.state.tagsViewRoutes.tagsViewRoutes.map((v: any) => {
+      tagsViewRoutes.value.map((v: any) => {
         if (!v.meta.isHide) {
           state.tagsViewList.push({ ...v });
         }

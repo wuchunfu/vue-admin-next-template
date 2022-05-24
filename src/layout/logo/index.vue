@@ -1,7 +1,7 @@
 <template>
   <div class="layout-logo" v-if="setShowLogo" @click="onThemeConfigChange">
     <img :src="logoMini" class="layout-logo-medium-img" alt=""/>
-    <span>{{ getThemeConfig.globalTitle }}</span>
+    <span>{{ themeConfig.globalTitle }}</span>
   </div>
   <div class="layout-logo-size" v-else @click="onThemeConfigChange">
     <img :src="logoMini" class="layout-logo-size-img" alt=""/>
@@ -10,34 +10,32 @@
 
 <script lang="ts">
 import { computed, defineComponent } from 'vue';
-import { useStore } from '/@/store';
+import { storeToRefs } from 'pinia';
+import { useThemeConfig } from '/@/stores/themeConfig';
 
 import logoMini from '/@/assets/logo-mini.svg';
 
 export default defineComponent({
   name: 'layoutLogo',
   setup() {
-    const store = useStore();
-    // 获取布局配置信息
-    const getThemeConfig = computed(() => {
-      return store.state.themeConfig.themeConfig;
-    });
+    const storesThemeConfig = useThemeConfig();
+    const { themeConfig } = storeToRefs(storesThemeConfig);
     // 设置 logo 的显示。classic 经典布局默认显示 logo
     const setShowLogo = computed(() => {
-      let { isCollapse, layout } = store.state.themeConfig.themeConfig;
+      let { isCollapse, layout } = themeConfig.value;
       return !isCollapse || layout === 'classic' || document.body.clientWidth < 1000;
     });
     // logo 点击实现菜单展开/收起
     const onThemeConfigChange = () => {
-      if (store.state.themeConfig.themeConfig.layout === 'transverse') {
+      if (themeConfig.value.layout === 'transverse') {
         return false;
       }
-      store.state.themeConfig.themeConfig.isCollapse = !store.state.themeConfig.themeConfig.isCollapse;
+      themeConfig.value.isCollapse = !themeConfig.value.isCollapse;
     };
     return {
       logoMini,
       setShowLogo,
-      getThemeConfig,
+      themeConfig,
       onThemeConfigChange,
     };
   },
@@ -56,6 +54,11 @@ export default defineComponent({
   font-size: 16px;
   cursor: pointer;
   animation: logoAnimation 0.3s ease-in-out;
+
+  span {
+    white-space: nowrap;
+    display: inline-block;
+  }
 
   &:hover {
     span {

@@ -1,27 +1,31 @@
 <template>
-  <div class="layout-navbars-breadcrumb" :style="{ display: isShowBreadcrumb }">
+  <div v-if="isShowBreadcrumb" class="layout-navbars-breadcrumb">
     <SvgIcon
       class="layout-navbars-breadcrumb-icon"
-      :name="getThemeConfig.isCollapse ? 'ele-Expand' : 'ele-Fold'"
+      :name="themeConfig.isCollapse ? 'ele-Expand' : 'ele-Fold'"
       :size="16"
       @click="onThemeConfigChange"
     />
     <el-breadcrumb class="layout-navbars-breadcrumb-hide">
-      <transition-group name="breadcrumb" mode="out-in">
-        <el-breadcrumb-item v-for="(v, k) in breadcrumbList" :key="v.meta.title">
+      <transition-group name="breadcrumb">
+        <el-breadcrumb-item
+          v-for="(v, k) in breadcrumbList"
+          :key="!v.meta.tagsViewName ? v.meta.title : v.meta.tagsViewName"
+        >
 					<span v-if="k === breadcrumbList.length - 1" class="layout-navbars-breadcrumb-span">
 						<SvgIcon
               :name="v.meta.icon"
               class="layout-navbars-breadcrumb-iconfont"
-              v-if="getThemeConfig.isBreadcrumbIcon"
+              v-if="themeConfig.isBreadcrumbIcon"
             />
-            {{ $t(v.meta.title) }}
+						<div v-if="!v.meta.tagsViewName">{{ $t(v.meta.title) }}</div>
+						<div v-else>{{ v.meta.tagsViewName }}</div>
 					</span>
           <a v-else @click.prevent="onBreadcrumbClick(v)">
             <SvgIcon
               :name="v.meta.icon"
               class="layout-navbars-breadcrumb-iconfont"
-              v-if="getThemeConfig.isBreadcrumbIcon"
+              v-if="themeConfig.isBreadcrumbIcon"
             />
             {{ $t(v.meta.title) }}
           </a>
@@ -34,7 +38,10 @@
 <script lang="ts">
 import { computed, defineComponent, onMounted, reactive, toRefs } from 'vue';
 import { onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router';
-import { useStore } from '/@/store';
+import other from '/@/utils/other';
+import { storeToRefs } from 'pinia';
+import { useThemeConfig } from '/@/stores/themeConfig';
+import { useRoutesList } from '/@/stores/routesList';
 import { Local } from '/@/utils/storage';
 
 // 定义接口来定义对象的类型
@@ -48,7 +55,10 @@ interface BreadcrumbState {
 export default defineComponent({
   name: 'layoutBreadcrumb',
   setup() {
-    const store = useStore();
+    const stores = useRoutesList();
+    const storesThemeConfig = useThemeConfig();
+    const { themeConfig } = storeToRefs(storesThemeConfig);
+    const { routesList } = storeToRefs(stores);
     const route = useRoute();
     const router = useRouter();
     const state = reactive<BreadcrumbState>({
@@ -57,18 +67,14 @@ export default defineComponent({
       routeSplitFirst: '',
       routeSplitIndex: 1,
     });
-    // 获取布局配置信息
-    const getThemeConfig = computed(() => {
-      return store.state.themeConfig.themeConfig;
-    });
     // 动态设置经典、横向布局不显示
     const isShowBreadcrumb = computed(() => {
       initRouteSplit(route.path);
-      const { layout, isBreadcrumb } = store.state.themeConfig.themeConfig;
+      const { layout, isBreadcrumb } = themeConfig.value;
       if (layout === 'classic' || layout === 'transverse') {
-        return 'none';
+        return false;
       } else {
-        return isBreadcrumb ? '' : 'none';
+        return isBreadcrumb ? true : false;
       }
     });
     // 面包屑点击时
@@ -82,18 +88,18 @@ export default defineComponent({
     };
     // 展开/收起左侧菜单点击
     const onThemeConfigChange = () => {
-      store.state.themeConfig.themeConfig.isCollapse = !store.state.themeConfig.themeConfig.isCollapse;
+      themeConfig.value.isCollapse = !themeConfig.value.isCollapse;
       setLocalThemeConfig();
     };
     // 存储布局配置
     const setLocalThemeConfig = () => {
       Local.remove('themeConfig');
-      Local.set('themeConfig', getThemeConfig.value);
+      Local.set('themeConfig', themeConfig.value);
     };
     // 处理面包屑数据
-    const getBreadcrumbList = (arr: Array<object>) => {
-      arr.map((item: any) => {
-        state.routeSplit.map((v: any, k: number, arrs: any) => {
+    const getBreadcrumbList = (arr: Array<string>) => {
+      arr.forEach((item: any) => {
+        state.routeSplit.forEach((v: any, k: number, arrs: any) => {
           if (state.routeSplitFirst === item.path) {
             state.routeSplitFirst += `/${ arrs[state.routeSplitIndex] }`;
             state.breadcrumbList.push(item);
@@ -107,15 +113,19 @@ export default defineComponent({
     };
     // 当前路由字符串切割成数组，并删除第一项空内容
     const initRouteSplit = (path: string) => {
-      if (!store.state.themeConfig.themeConfig.isBreadcrumb) {
+      if (!themeConfig.value.isBreadcrumb) {
         return false;
       }
-      state.breadcrumbList = [store.state.routesList.routesList[0]];
+      state.breadcrumbList = [routesList.value[0]];
       state.routeSplit = path.split('/');
       state.routeSplit.shift();
       state.routeSplitFirst = `/${ state.routeSplit[0] }`;
       state.routeSplitIndex = 1;
-      getBreadcrumbList(store.state.routesList.routesList);
+      getBreadcrumbList(routesList.value);
+      if (route.name === 'home') {
+        state.breadcrumbList.shift();
+      }
+      state.breadcrumbList[state.breadcrumbList.length - 1].meta.tagsViewName = other.setTagsViewNameI18n(route);
     };
     // 页面加载时
     onMounted(() => {
@@ -128,7 +138,7 @@ export default defineComponent({
     return {
       onThemeConfigChange,
       isShowBreadcrumb,
-      getThemeConfig,
+      themeConfig,
       onBreadcrumbClick,
       ...toRefs(state),
     };
@@ -142,13 +152,18 @@ export default defineComponent({
   height: inherit;
   display: flex;
   align-items: center;
-  padding-left: 15px;
 
   .layout-navbars-breadcrumb-icon {
     cursor: pointer;
     font-size: 18px;
-    margin-right: 15px;
     color: var(--next-bg-topBarColor);
+    height: 100%;
+    width: 40px;
+    opacity: 0.8;
+
+    &:hover {
+      opacity: 1;
+    }
   }
 
   .layout-navbars-breadcrumb-span {

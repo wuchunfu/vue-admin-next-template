@@ -75,7 +75,13 @@ pnpm run build
 #### 💒 集成后端
 
 - <a target="_blank" href="https://github.com/PandaGoAdmin/PandaX">@熊猫 PandaGoAdmin</a>
-- <a target="_blank" href="https://www.gnet.top/public">@甜蜜蜜 GoPro 平台</a>
+- <a target="_blank" href="https://toscode.gitee.com/GionConnection/gopro_free">@甜蜜蜜 GoPro 平台</a>
+- <a target="_blank" href="https://gitee.com/GionConnection/niupi-free">@甜蜜蜜 NiuPi 平台</a>
+- <a target="_blank" href="https://gitee.com/tiger1103/gfast/tree/os-v3/">@游子 GFast-V3</a>
+- <a target="_blank" href="https://gitee.com/diygw/diygw-ui-php/">@diygw.com gw-ui-php</a>
+- <a target="_blank" href="https://gitee.com/zsvg/vboot-net">@zsvg vboot-net</a>
+- <a target="_blank" href="https://gitee.com/zsvg/vboot-java">@zsvg vboot-java</a>
+- @华仔
 
 #### ❤️ 鸣谢列表
 
@@ -100,10 +106,8 @@ pnpm run build
 - <a href="https://github.com/fengyuanchen/cropperjs" target="_blank">cropperjs</a>
 - <a href="https://github.com/davidshimjs/qrcodejs" target="_blank">qrcodejs</a>
 - <a href="https://github.com/crabbly/Print.js" target="_blank">print-js</a>
-- <a href="https://github.com/likaia/screen-shot" target="_blank">vue-web-screen-shot</a>
 - <a href="https://github.com/jbaysolutions/vue-grid-layout" target="_blank">vue-grid-layout</a>
 - <a href="https://github.com/antoniandre/splitpanes" target="_blank">splitpanes</a>
-- <a href="https://github.com/yimijianfang/vue-drag-verify" target="_blank">vue-drag-verify</a>
 - <a href="https://github.com/jsplumb/jsplumb" target="_blank">jsplumb</a>
 
 #### 💌 支持作者

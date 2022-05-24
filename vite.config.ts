@@ -79,9 +79,10 @@ const viteConfig = defineConfig(({ command, mode }: ConfigEnv): UserConfig => {
           compact: true,
           // 拆分代码
           manualChunks: {
-            'vue': ['vue', 'vue-router', 'vuex', 'vue-i18n'],
+            'vue': ['vue', 'vue-router', 'pinia', 'vue-i18n'],
             'element-plus': ['element-plus'],
             'axios': ['axios'],
+            'echarts': ['echarts'],
           },
           entryFileNames: `assets/[name].${ new Date().getTime() }.js`,
           chunkFileNames: `assets/[name].${ new Date().getTime() }.js`,

@@ -2,6 +2,41 @@
 
 🎉🎉🔥 `vue-next-admin` 基于 vue3.x 、Typescript、vite、Element plus 等，适配手机、平板、pc 的后台开源免费模板库（vue2.x 请切换 vue-prev-admin 分支）
 
+## 2.1.0
+
+`2022.04.18`
+
+⚡⚡⚡ 此版本为破环性更新，优化内容如下：（谨慎更新！谨慎更新！！谨慎更新！！！）。因为 `vuex` 替换成 `pinia`
+
+- 🌟 更新 依赖更新最新版本
+- 🎯 优化 部分界面图片不显示问题（更换 gitee 在线图片地址源）
+- 🎯 优化 各界面方法引入与逻辑之间添加一行空行，方便区分内容
+- 🎯 优化 图标选择器 [#I4YAHB](https://gitee.com/lyt-top/vue-next-admin/issues/I4YAHB)，感谢[@真有你的](https://gitee.com/sunliusen)
+- 🎯 优化 图标选择器 icon type 类型为 all 时，类型 ali、ele、awe 回显问题
+- 🎯 优化 去掉开发环境 i18n 控制台警告，页面代码：[i18n/index.ts](https://gitee.com/lyt-top/vue-next-admin/blob/master/src/i18n/index.ts)
+- 🎯 优化 `NextLoading.start()` 方法，防止第一次进入界面时出现短暂空白
+- 🎯 优化 地址栏有参数退出登录，再次登录不跳之前界面问题 `src/layout/navBars/breadcrumb/user.vue`
+- 🎯 优化 `SvgIcon` 组件，防止 `开启 Tagsview 图标` 时，`tagsView 右键菜单关闭` 报错问题，工作流不可连线、全屏时关闭按钮消失问题
+- 🎯 优化 [如果 url 中有中文等特殊字符，第一次切换该 tab 时 keep-alive 失效#I55JS7](https://gitee.com/lyt-top/vue-next-admin/issues/I55JS7),感谢[yuyong1566](https://gitee.com/yuyong1566)
+- 🎯 优化 [wangEditor](https://www.wangeditor.com/) 更新到 v5，[vue3 版本线上示例中 wangeditor 富文本编辑器 demo 实例,无法换行#I5565B](https://gitee.com/lyt-top/vue-next-admin/issues/I5565B)，感谢@[jenchih](https://gitee.com/jenchih)
+- 🎯 优化 [在关闭 tagview 时，高度刷新时会会变化，出现滚动条](https://gitee.com/lyt-top/vue-next-admin/issues/I55FHM)，感谢[张松](https://gitee.com/zs310071113)
+- 🎯 优化 [路由参数](https://lyt-top.gitee.io/vue-next-admin-preview/#/params/common)演示
+- 🎉 新增 [vuex](https://vuex.vuejs.org/) 替换成 [pinia](https://pinia.vuejs.org/getting-started.html)
+- 🎉 新增 tagsView 支持自定义 tagsView 名称（文章详情时有用），前往体验：[路由参数/普通路由](https://lyt-top.gitee.io/vue-next-admin-preview/#/params/common)。新增 tagsView 支持自定义名称国际化，感谢[@q7but](https://gitee.com/q7but)、[!22 add 添加自定义 tagVIewName 拓展,支持国际化](https://gitee.com/lyt-top/vue-next-admin/pulls/22/files)、感谢[@tony_tong_xin](https://gitee.com/tony_tong_xin)
+- 🐞 修复 适配 `"element-plus": "^2.1.9"，2.2.0` 版本
+- 🐞 修复 [导航栏横向布局后，一级菜单显示问题#I4Z3M3](https://gitee.com/lyt-top/vue-next-admin/issues/I4Z3M3)
+- 🐞 修复 横向布局三级及以上导航菜单高亮、导航高度不统一问题
+- 🐞 修复 分栏模式下,选中的菜单是 primary 样式,鼠标移入字也变成 primary 色了，感谢群友@孤夜-流殇
+- 🐞 修复 [vuex 里面改了颜色 但是不生效 #I4WFMA](https://gitee.com/lyt-top/vue-next-admin/issues/I4WFMA)
+- 🐞 修复 全局主题 primary 清空颜色后报错，[#I4X0LG](https://gitee.com/lyt-top/vue-next-admin/issues/I4X0LG)，感谢[面向 BUG 编程](https://gitee.com/fhtfy)
+- 🐞 修复 [.eslintrc.js 文件 rules 标签名错误 #I53IPK](https://gitee.com/lyt-top/vue-next-admin/issues/I53IPK)，感谢[yuyong1566](https://gitee.com/yuyong1566)
+- 🐞 修复 `开启 Tagsview 图标` 时，`tagsView 右键菜单关闭` 报错问题
+- 🐞 修复 `router.push` 路径找不到时报错问题，`404、401 界面` 已移入到 `main` 主布局里（之前全屏）
+- 🐞 修复 [全局修改组件大小失效了](https://gitee.com/lyt-top/vue-next-admin/issues/I551RP)，感谢[lg_boy](https://gitee.com/lg_boy)
+- 🐞 修复 [修改一下配置时，需要每次都清理 `window.localStorage` 浏览器永久缓存，配置才会生效，问题解决#I567R1](https://gitee.com/lyt-top/vue-next-admin/issues/I567R1),感谢[@lanbao123](https://gitee.com/lanbao123)
+- 🐞 修复 [标记为需要缓存的 tab 页后，再次从左侧菜单打开，还是显示被缓存的页面内容#I4UY3G](https://gitee.com/lyt-top/vue-next-admin/issues/I4UY3G)，感谢@axcc1234、特别感谢群友@华仔
+- 🌈 重构 路由（`/src/router/index.ts`）解决 No match found for location with path "xxx"(前端控制，后端控制未解决) 问题
+
 ## 2.0.2
 
 `2022.03.04`

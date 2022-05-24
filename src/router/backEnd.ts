@@ -1,10 +1,18 @@
-import { store } from '/@/store/index.ts';
+import { RouteRecordRaw } from 'vue-router';
+import pinia from '/@/stores/index';
+import { useUserInfo } from '/@/stores/userInfo';
 import { Session } from '/@/utils/storage';
 import { NextLoading } from '/@/utils/loading';
-import { setAddRoute, setFilterMenuAndCacheTagsViewRoutes } from '/@/router/index';
+import { dynamicRoutes, notFoundAndNoPower } from '/@/router/route';
+import { formatFlatteningRoutes, formatTwoStageRoutes, router } from '/@/router/index';
+import { useRoutesList } from '/@/stores/routesList';
+import { useTagsViewRoutes } from '/@/stores/tagsViewRoutes';
 
 const layouModules: any = import.meta.glob('../layout/routerView/*.{vue,tsx}');
 const viewsModules: any = import.meta.glob('../views/**/*.{vue,tsx}');
+
+// 后端控制路由
+
 /**
  * 获取目录下的 .vue、.tsx 全部文件
  * @method import.meta.glob
@@ -14,11 +22,11 @@ const dynamicViewsModules: Record<string, Function> = Object.assign({}, { ...lay
 
 /**
  * 后端控制路由：初始化方法，防止刷新时路由丢失
- * @method  NextLoading 界面 loading 动画开始执行
- * @method store.dispatch('userInfos/setUserInfos') 触发初始化用户信息
- * @method store.dispatch('requestOldRoutes/setBackEndControlRoutes') 存储接口原始路由（未处理component），根据需求选择使用
+ * @method NextLoading 界面 loading 动画开始执行
+ * @method useUserInfo().setUserInfos() 触发初始化用户信息 pinia
+ * @method useRequestOldRoutes().setRequestOldRoutes() 存储接口原始路由（未处理component），根据需求选择使用
  * @method setAddRoute 添加动态路由
- * @method setFilterMenuAndCacheTagsViewRoutes 设置递归过滤有权限的路由到 vuex routesList 中（已处理成多级嵌套路由）及缓存多级嵌套数组处理后的一维数组
+ * @method setFilterMenuAndCacheTagsViewRoutes 设置路由到 vuex routesList 中（已处理成多级嵌套路由）及缓存多级嵌套数组处理后的一维数组
  */
 export async function initBackEndControlRoutes() {
   // 界面 loading 动画开始执行
@@ -29,12 +37,55 @@ export async function initBackEndControlRoutes() {
   if (!Session.get('token')) {
     return false;
   }
-  // 触发初始化用户信息
-  store.dispatch('userInfos/setUserInfos');
+  // 触发初始化用户信息 pinia
+  useUserInfo().setUserInfos();
   // 添加动态路由
   await setAddRoute();
-  // 设置递归过滤有权限的路由到 vuex routesList 中（已处理成多级嵌套路由）及缓存多级嵌套数组处理后的一维数组
-  setFilterMenuAndCacheTagsViewRoutes();
+  // 设置路由到 vuex routesList 中（已处理成多级嵌套路由）及缓存多级嵌套数组处理后的一维数组
+  await setFilterMenuAndCacheTagsViewRoutes();
+}
+
+/**
+ * 设置路由到 vuex routesList 中（已处理成多级嵌套路由）及缓存多级嵌套数组处理后的一维数组
+ * @description 用于左侧菜单、横向菜单的显示
+ * @description 用于 tagsView、菜单搜索中：未过滤隐藏的(isHide)
+ */
+export function setFilterMenuAndCacheTagsViewRoutes() {
+  const storesRoutesList = useRoutesList(pinia);
+  storesRoutesList.setRoutesList(dynamicRoutes[0].children as any);
+  setCacheTagsViewRoutes();
+}
+
+/**
+ * 缓存多级嵌套数组处理后的一维数组
+ * @description 用于 tagsView、菜单搜索中：未过滤隐藏的(isHide)
+ */
+export function setCacheTagsViewRoutes() {
+  const storesTagsView = useTagsViewRoutes(pinia);
+  storesTagsView.setTagsViewRoutes(formatTwoStageRoutes(formatFlatteningRoutes(dynamicRoutes))[0].children);
+}
+
+/**
+ * 处理路由格式及添加捕获所有路由或 404 Not found 路由
+ * @description 替换 dynamicRoutes（/@/router/route）第一个顶级 children 的路由
+ * @returns 返回替换后的路由数组
+ */
+export function setFilterRouteEnd() {
+  let filterRouteEnd: any = formatTwoStageRoutes(formatFlatteningRoutes(dynamicRoutes));
+  filterRouteEnd[0].children = [...filterRouteEnd[0].children, ...notFoundAndNoPower];
+  return filterRouteEnd;
+}
+
+/**
+ * 添加动态路由
+ * @method router.addRoute
+ * @description 此处循环为 dynamicRoutes（/@/router/route）第一个顶级 children 的路由一维数组，非多级嵌套
+ * @link 参考：https://next.router.vuejs.org/zh/api/#addroute
+ */
+export async function setAddRoute() {
+  await setFilterRouteEnd().forEach((route: RouteRecordRaw) => {
+    router.addRoute(route);
+  });
 }
 
 /**

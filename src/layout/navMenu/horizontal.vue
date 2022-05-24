@@ -1,7 +1,8 @@
 <template>
   <div class="el-menu-horizontal-warp">
     <el-scrollbar @wheel.native.prevent="onElMenuHorizontalScroll" ref="elMenuHorizontalScrollRef">
-      <el-menu router :default-active="defaultActive" background-color="transparent" mode="horizontal">
+      <el-menu router :default-active="defaultActive" :ellipsis="false" background-color="transparent"
+               mode="horizontal">
         <template v-for="val in menuLists">
           <el-sub-menu :index="val.path" v-if="val.children && val.children.length > 0" :key="val.path">
             <template #title>
@@ -33,7 +34,9 @@
 <script lang="ts">
 import { computed, defineComponent, getCurrentInstance, nextTick, onMounted, reactive, toRefs } from 'vue';
 import { onBeforeRouteUpdate, useRoute } from 'vue-router';
-import { useStore } from '/@/store';
+import { storeToRefs } from 'pinia';
+import { useRoutesList } from '/@/stores/routesList';
+import { useThemeConfig } from '/@/stores/themeConfig';
 import SubItem from '/@/layout/navMenu/subItem.vue';
 
 export default defineComponent({
@@ -48,7 +51,10 @@ export default defineComponent({
   setup(props: any) {
     const { proxy } = <any>getCurrentInstance();
     const route = useRoute();
-    const store = useStore();
+    const stores = useRoutesList();
+    const storesThemeConfig = useThemeConfig();
+    const { routesList } = storeToRefs(stores);
+    const { themeConfig } = storeToRefs(storesThemeConfig);
     const state: any = reactive({
       defaultActive: null,
     });
@@ -72,7 +78,7 @@ export default defineComponent({
       });
     };
     // 路由过滤递归函数
-    const filterRoutesFun = (arr: Array<object>) => {
+    const filterRoutesFun = (arr: Array<string>) => {
       return arr
         .filter((item: any) => !item.meta.isHide)
         .map((item: any) => {
@@ -87,7 +93,7 @@ export default defineComponent({
     const setSendClassicChildren = (path: string) => {
       const currentPathSplit = path.split('/');
       let currentData: any = {};
-      filterRoutesFun(store.state.routesList.routesList).map((v, k) => {
+      filterRoutesFun(routesList.value).map((v, k) => {
         if (v.path === `/${ currentPathSplit[1] }`) {
           v['k'] = k;
           currentData['item'] = [{ ...v }];
@@ -102,8 +108,8 @@ export default defineComponent({
     // 设置页面当前路由高亮
     const setCurrentRouterHighlight = (currentRoute: any) => {
       const { path, meta } = currentRoute;
-      if (store.state.themeConfig.themeConfig.layout === 'classic') {
-        (<any>state.defaultActive) = `/${path.split('/')[1]}`;
+      if (themeConfig.value.layout === 'classic') {
+        (<any>state.defaultActive) = `/${ path.split('/')[1] }`;
       } else {
         const pathSplit = meta.isDynamic ? meta.isDynamicPath.split('/') : path.split('/');
         if (pathSplit.length >= 4 && meta.isHide) {
@@ -122,7 +128,7 @@ export default defineComponent({
     onBeforeRouteUpdate((to: any) => {
       setCurrentRouterHighlight(to);
       // 修复经典布局开启切割菜单时，点击tagsView后左侧导航菜单数据不变的问题
-      let { layout, isClassicSplitMenu } = store.state.themeConfig.themeConfig;
+      let { layout, isClassicSplitMenu } = themeConfig.value;
       if (layout === 'classic' && isClassicSplitMenu) {
         proxy.mittBus.emit('setSendClassicChildren', setSendClassicChildren(to.path));
       }
