@@ -19,25 +19,29 @@ export const useUserInfo = defineStore('userInfo', {
   }),
   actions: {
     async setUserInfos() {
-      // 模拟数据，请求接口时，记得删除多余代码及对应依赖的引入
-      const userName = Cookies.get('userName');
-
-      // 用户信息模拟数据
-      const userInfos: any = {
-        userName: userName,
-        photo: '/logo.png',
-        time: new Date().getTime(),
-        roles: ['admin', 'common'],
-      };
-
       // 存储用户信息到浏览器缓存
-      Session.set('userInfo', userInfos);
-
       if (Session.get('userInfo')) {
         this.userInfos = Session.get('userInfo');
       } else {
-        this.userInfos = userInfos;
+        this.userInfos = await this.getApiUserInfo() as any;
       }
+    },
+    // 模拟接口数据
+    async getApiUserInfo() {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          // 模拟数据，请求接口时，记得删除多余代码及对应依赖的引入
+          const userName = Cookies.get('userName');
+          // 用户信息模拟数据
+          const userInfos: any = {
+            userName: userName,
+            photo: '/logo.png',
+            time: new Date().getTime(),
+            roles: ['admin', 'common'],
+          };
+          resolve(userInfos);
+        }, 3000);
+      });
     },
   },
 });

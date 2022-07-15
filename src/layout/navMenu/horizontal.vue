@@ -148,11 +148,11 @@ export default defineComponent({
   overflow: hidden;
   margin-right: 30px;
 
-  ::v-deep(.el-scrollbar__bar.is-vertical) {
+  :deep(.el-scrollbar__bar.is-vertical) {
     display: none;
   }
 
-  ::v-deep(a) {
+  :deep(a) {
     width: 100%;
   }
 

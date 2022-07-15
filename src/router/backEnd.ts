@@ -38,7 +38,7 @@ export async function initBackEndControlRoutes() {
     return false;
   }
   // 触发初始化用户信息 pinia
-  useUserInfo().setUserInfos();
+  await useUserInfo().setUserInfos();
   // 添加动态路由
   await setAddRoute();
   // 设置路由到 vuex routesList 中（已处理成多级嵌套路由）及缓存多级嵌套数组处理后的一维数组

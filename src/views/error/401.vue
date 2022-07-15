@@ -20,7 +20,6 @@
 
 <script lang="ts">
 import { computed, defineComponent } from 'vue';
-import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { useThemeConfig } from '/@/stores/themeConfig';
 import { useTagsViewRoutes } from '/@/stores/tagsViewRoutes';
@@ -33,10 +32,11 @@ export default defineComponent({
     const storesTagsViewRoutes = useTagsViewRoutes();
     const { themeConfig } = storeToRefs(storesThemeConfig);
     const { isTagsViewCurrenFull } = storeToRefs(storesTagsViewRoutes);
-    const router = useRouter();
     const onSetAuth = () => {
+      // 清除缓存/token等
       Session.clear();
-      router.push('/login');
+      // 使用 reload 时，不需要调用 resetRoute() 重置路由
+      window.location.reload();
     };
     // 设置主内容的高度
     const initTagViewHeight = computed(() => {

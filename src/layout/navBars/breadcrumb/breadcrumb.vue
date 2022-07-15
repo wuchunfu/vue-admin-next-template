@@ -178,12 +178,12 @@ export default defineComponent({
     margin-right: 5px;
   }
 
-  ::v-deep(.el-breadcrumb__separator) {
+  :deep(.el-breadcrumb__separator) {
     opacity: 0.7;
     color: var(--next-bg-topBarColor);
   }
 
-  ::v-deep(.el-breadcrumb__inner a, .el-breadcrumb__inner.is-link) {
+  :deep(.el-breadcrumb__inner a, .el-breadcrumb__inner.is-link) {
     font-weight: unset !important;
     color: var(--next-bg-topBarColor);
 
