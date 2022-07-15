@@ -45,9 +45,9 @@
 
 #### 🏭 环境支持
 
-| Edge                                                                     | last 2 versions                                                                   | last 2 versions                                                                | last 2 versions                                                                |
-| ------------------------------------------------------------------------ | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
-| ![Edge](https://cdn.jsdelivr.net/npm/@browser-logos/edge/edge_32x32.png) | ![Firefox](https://cdn.jsdelivr.net/npm/@browser-logos/firefox/firefox_32x32.png) | ![Chrome](https://cdn.jsdelivr.net/npm/@browser-logos/chrome/chrome_32x32.png) | ![Safari](https://cdn.jsdelivr.net/npm/@browser-logos/safari/safari_32x32.png) |
+| Edge      | Firefox      | Chrome      | Safari      |
+| --------- | ------------ | ----------- | ----------- |
+| Edge ≥ 79 | Firefox ≥ 78 | Chrome ≥ 64 | Safari ≥ 12 |
 
 > 由于 Vue3 不再支持 IE11，故而 ElementPlus 也不支持 IE11 及之前版本。
 
@@ -81,7 +81,7 @@ pnpm run build
 - <a target="_blank" href="https://gitee.com/diygw/diygw-ui-php/">@diygw.com gw-ui-php</a>
 - <a target="_blank" href="https://gitee.com/zsvg/vboot-net">@zsvg vboot-net</a>
 - <a target="_blank" href="https://gitee.com/zsvg/vboot-java">@zsvg vboot-java</a>
-- @华仔
+- - <a target="_blank" href="https://gitee.com/wonderful-code/buildadmin">@青红造了个白 buildadmin</a>
 
 #### ❤️ 鸣谢列表
 

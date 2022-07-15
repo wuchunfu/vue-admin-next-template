@@ -9,7 +9,7 @@
       frameborder="0"
       height="100%"
       width="100%"
-      id="iframe"
+      ref="iframeDom"
       v-show="!iframeLoading"
     >
     </iframe>
@@ -32,6 +32,7 @@ export default defineComponent({
     const { themeConfig } = storeToRefs(storesThemeConfig);
     const { isTagsViewCurrenFull } = storeToRefs(storesTagsViewRoutes);
     const state = reactive({
+      iframeDom: null as HTMLIFrameElement | null,
       iframeLoading: true,
       iframeUrl: '' as any,
     });
@@ -40,7 +41,7 @@ export default defineComponent({
       state.iframeUrl = <any>route.meta.isLink;
       nextTick(() => {
         state.iframeLoading = true;
-        const iframe = document.getElementById('iframe');
+        const iframe = state.iframeDom;
         if (!iframe) {
           return false;
         }

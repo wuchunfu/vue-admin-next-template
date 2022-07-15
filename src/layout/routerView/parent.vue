@@ -20,12 +20,14 @@ import {
   onUnmounted,
   reactive,
   toRefs,
-  watch
+  watch,
+  onMounted
 } from 'vue';
 import { useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { useKeepALiveNames } from '/@/stores/keepAliveNames';
 import { useThemeConfig } from '/@/stores/themeConfig';
+import { Session } from '/@/utils/storage';
 
 // 定义接口来定义对象的类型
 interface ParentViewState {
@@ -64,6 +66,16 @@ export default defineComponent({
           state.refreshRouterViewKey = fullPath;
           state.keepAliveNameList = keepAliveNames.value;
         });
+      });
+    });
+    // 页面加载时
+    onMounted(() => {
+      nextTick(() => {
+        setTimeout(() => {
+          if (themeConfig.value.isCacheTagsView) {
+            cachedViews.value = Session.get('tagsViewList')?.map((item: any) => item.name);
+          }
+        }, 0);
       });
     });
     // 页面卸载时
